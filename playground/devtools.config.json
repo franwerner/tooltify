@@ -1,0 +1,13 @@
+{
+  "packagesDir": "./src",
+  "auth": {
+    "secret": "dev-secret-key",
+    "users": {
+      "dev": { "hash": "dev" }
+    }
+  },
+  "claude": {
+    "bin": "claude",
+    "projectRoot": "."
+  }
+}

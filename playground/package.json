@@ -1,0 +1,19 @@
+{
+  "name": "@devtools/playground",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev:rspack": "tsx ../node_modules/@rspack/cli/bin/rspack.js serve -c rspack.config.ts",
+    "dev:webpack": "webpack serve -c webpack.config.ts",
+    "dev:vite": "vite"
+  },
+  "dependencies": {
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
+  },
+  "devDependencies": {
+    "@rspack/cli": "^1.3.0",
+    "@rspack/core": "^1.3.0",
+    "tsx": "^4.21.0"
+  }
+}
