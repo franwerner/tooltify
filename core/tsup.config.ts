@@ -2,8 +2,7 @@ import { defineConfig } from "tsup";
 
 export default defineConfig({
   entry: {
-    core: "core/server/index.ts",
-    rspack: "integrations/rspack.integration.ts",
+    index: "./index.ts",
   },
   format: ["esm"],
   dts: true,
@@ -11,8 +10,9 @@ export default defineConfig({
   clean: true,
   outDir: "dist",
   external: [
-    "@rspack/core",
-    "express",
     "socket.io",
+    "express",
+    "jsonwebtoken",
+    "cors"
   ],
 });

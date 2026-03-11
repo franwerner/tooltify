@@ -12,8 +12,8 @@ export default defineConfig({
     emptyOutDir: true,
     lib: {
       entry: path.resolve(__dirname, "entry.tsx"),
-      name: "Devtools",
-      fileName: "devtools",
+      name: "client",
+      fileName: "client",
       formats: ["iife"],
     },
     rollupOptions: {

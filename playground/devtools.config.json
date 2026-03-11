@@ -1,10 +1,12 @@
 {
   "packagesDir": "./src",
+  "port": 4100,
   "auth": {
     "secret": "dev-secret-key",
+    "salt": "dev-salt-key",
     "users": {
       "dev": {
-        "hash": "dev"
+        "hash": "178a03f3eb05968222d6797b83818af44c6a42e2d943998dd478cb8b8188e1f5"
       }
     }
   }

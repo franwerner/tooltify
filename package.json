@@ -1,15 +1,8 @@
 {
   "name": "tooltify",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "type": "module",
-  "scripts": {
-    "build": "npm run build:client && npm run build:lib",
-    "build:client": "npm run build -w core/client",
-    "build:lib": "tsup",
-    "dev:client": "npm run dev -w core/client",
-    "public": "npm publish --access public",
-    "publish": "npm run build && npm run public"
-  },
+  "scripts": {},
   "keywords": [
     "devtools",
     "cli",
@@ -22,34 +15,15 @@
     "type": "git",
     "url": "https://github.com/franwerner/tooltify"
   },
-  "exports": {
-    "./core": {
-      "import": "./dist/core.js",
-      "types": "./dist/core.d.ts"
-    },
-    "./rspack": {
-      "import": "./dist/rspack.js",
-      "types": "./dist/rspack.d.ts"
-    }
-  },
-  "files": [
-    "dist",
-    "core/client/dist"
-  ],
   "workspaces": [
-    "core/client",
-    "core/server",
+    "core",
     "integrations",
     "playground"
   ],
   "devDependencies": {
-    "@types/cors": "^2.8.19",
-    "@types/node": "^25.3.5",
+    "@types/node": "^25.4.0",
     "tsup": "^8.5.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
-  },
-  "dependencies": {
-    "cors": "^2.8.6"
   }
 }

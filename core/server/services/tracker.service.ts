@@ -3,7 +3,7 @@ import { execFile } from "child_process";
 import type { EditorService } from "./editor.service";
 
 export class TrackerService {
-  constructor(private editor: EditorService) {}
+  constructor(private editor: EditorService) { }
 
   openSource(source: string, username: string) {
     const match = source.match(/^(.+):(\d+)$/);
@@ -23,10 +23,6 @@ export class TrackerService {
       if (!entry) return { ok: false, error: `User "${username}" not found` };
       const uid = entry.split(":")[2];
       const homeDir = entry.split(":")[5];
-
-      if (!this.hasRunning(username)) {
-        return { ok: false, error: `No VS Code instance running for ${username}` };
-      }
 
       const socket = this.findSocket(uid);
       if (!socket) return { ok: false, error: `No VS Code IPC socket for ${username}` };
@@ -72,23 +68,4 @@ export class TrackerService {
     }
   }
 
-  private hasRunning(username: string): boolean {
-    try {
-      const procs = readdirSync("/proc").filter((d) => /^\d+$/.test(d));
-      for (const pid of procs) {
-        try {
-          const cmdline = readFileSync(`/proc/${pid}/cmdline`, "utf-8");
-          if (!cmdline.includes("server-main.js")) continue;
-          const status = readFileSync(`/proc/${pid}/status`, "utf-8");
-          const uidLine = status.split("\n").find((l) => l.startsWith("Uid:"));
-          if (!uidLine) continue;
-          const procUid = uidLine.split(/\s+/)[1];
-          const passwd = readFileSync("/etc/passwd", "utf-8");
-          const entry = passwd.split("\n").find((l) => l.split(":")[2] === procUid);
-          if (entry && entry.split(":")[0] === username) return true;
-        } catch {}
-      }
-    } catch {}
-    return false;
-  }
 }

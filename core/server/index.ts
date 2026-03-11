@@ -1,4 +1,6 @@
 import http from "http";
+import path from "path";
+import { fileURLToPath } from "url";
 import express from "express";
 import cors from "cors";
 import { createRouter } from "./presentation/http/routes";
@@ -10,7 +12,9 @@ import { TrackerService } from "./services/tracker.service";
 import { UserTrackerService } from "./services/user-tracker.service";
 import { BuildTrackerService } from "./services/build-tracker.service";
 
-const DEFAULT_PORT = 4100;
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const CLIENT_BUNDLE = path.resolve(__dirname, "../client/dist/client.iife.js");
+
 
 export interface StartOptions {
   port?: number;
@@ -19,7 +23,7 @@ export interface StartOptions {
 
 export function startServer(opts: StartOptions = {}) {
   const config = loadConfig(opts);
-  const port = config.port || DEFAULT_PORT;
+  const port = config.port
 
   const auth = new AuthService(config.auth);
   const editor = new EditorService(config.packagesDir);
@@ -27,8 +31,10 @@ export function startServer(opts: StartOptions = {}) {
   const userTracker = new UserTrackerService(config.packagesDir);
   userTracker.start();
 
+
   const app = express();
   app.use(cors({ origin: true, credentials: true }));
+  app.get("/tooltify.js", (_req, res) => res.sendFile(CLIENT_BUNDLE));
 
   const server = http.createServer(app);
   const io = initSocket(server, auth);
@@ -38,7 +44,8 @@ export function startServer(opts: StartOptions = {}) {
   app.use(createRouter({ auth, editor, tracker, userTracker, buildTracker }));
 
   server.listen(port, () => {
-    console.log(`[devtools] server running on http://localhost:${port}`);
+    console.log(`[tooltify] server running on http://localhost:${port}`);
+    console.log(config)
   });
 
   return {

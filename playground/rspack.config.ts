@@ -1,4 +1,8 @@
-import { rsDevTools } from "../integrations/rspack.integration";
+import { HtmlRspackPlugin } from "@rspack/core";
+import { rspackTooltify } from "@tooltify/integration/rspack";
+import { createRequire } from "module";
+
+const require = createRequire(import.meta.url);
 
 export default {
   entry: "./src/index.tsx",
@@ -30,16 +34,16 @@ export default {
   },
 
   resolve: {
-    extensions: [".tsx", ".ts", ".js"]
+    extensions: [".tsx", ".ts", ".js"],
+    alias: {
+      "react": require.resolve("react")
+    }
   },
 
-  builtins: {
-    html: [
-      {
-        template: "./index.html"
-      }
-    ]
-  },
+  plugins: [
+    new HtmlRspackPlugin({ template: "./index.html" }),
+    rspackTooltify()
+  ],
 
   devServer: {
     port: 5173,

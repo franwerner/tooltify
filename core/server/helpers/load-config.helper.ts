@@ -6,10 +6,13 @@ export interface DevtoolsConfig {
   port?: number;
   packagesDir: string;
   auth: {
+    salt: string;
     secret: string;
     users: Record<string, UserEntry>;
   };
 }
+const DEFAULT_PORT = 4100;
+
 
 export function loadConfig(overrides: { port?: number; configDir?: string } = {}): DevtoolsConfig {
   const baseDir = overrides.configDir || process.cwd();
@@ -22,11 +25,10 @@ export function loadConfig(overrides: { port?: number; configDir?: string } = {}
   }
 
   const config: DevtoolsConfig = JSON.parse(raw);
-  const configDir = path.dirname(configPath);
 
-  config.packagesDir = path.resolve(configDir, config.packagesDir);
+  config.packagesDir = path.resolve(process.cwd(), config.packagesDir);
 
-  if (overrides.port) config.port = overrides.port;
+  config.port = overrides.port || DEFAULT_PORT
 
   return config;
 }
