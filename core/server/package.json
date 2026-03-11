@@ -1,5 +1,5 @@
 {
-  "name": "@devtools/server",
+  "name": "@chad-tools/server",
   "version": "0.1.0",
   "type": "module",
   "dependencies": {

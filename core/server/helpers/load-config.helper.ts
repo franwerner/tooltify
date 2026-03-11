@@ -1,7 +1,6 @@
 import { readFileSync } from "fs";
 import path from "path";
 import type { UserEntry } from "../services/auth.service";
-import type { ClaudeConfig } from "../services/claude.service";
 
 export interface DevtoolsConfig {
   port?: number;
@@ -10,7 +9,6 @@ export interface DevtoolsConfig {
     secret: string;
     users: Record<string, UserEntry>;
   };
-  claude: Omit<ClaudeConfig, "packagesDir"> & { packagesDir?: string };
 }
 
 export function loadConfig(overrides: { port?: number; configDir?: string } = {}): DevtoolsConfig {
@@ -27,10 +25,6 @@ export function loadConfig(overrides: { port?: number; configDir?: string } = {}
   const configDir = path.dirname(configPath);
 
   config.packagesDir = path.resolve(configDir, config.packagesDir);
-
-  if (config.claude.projectRoot) {
-    config.claude.projectRoot = path.resolve(configDir, config.claude.projectRoot);
-  }
 
   if (overrides.port) config.port = overrides.port;
 

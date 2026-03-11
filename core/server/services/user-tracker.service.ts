@@ -7,23 +7,23 @@ export class UserTrackerService {
   private webWrites = new Map<string, string>();
   private pidUserCache = new Map<string, string>();
 
-  constructor(private pathFilter: string) {}
+  constructor(private pathFilter: string) { }
 
   start() {
-    this.fatraceProc = spawn("fatrace", ["-f", "W"], {
-      stdio: ["ignore", "pipe", "ignore"],
-    });
+    // this.fatraceProc = spawn("fatrace", ["-f", "W"], {
+    //   stdio: ["ignore", "pipe", "ignore"],
+    // });
 
-    this.fatraceProc.stdout!.on("data", (data: Buffer) => {
-      for (const line of data.toString().split("\n")) {
-        if (!line.includes(this.pathFilter)) continue;
-        const m = line.match(/\((\d+)\):\s+C?W\s+(.+)/);
-        if (m) {
-          const user = this.resolveUser(m[1]) || "unknown";
-          this.recentWrites.set(m[2].trim(), user);
-        }
-      }
-    });
+    // this.fatraceProc.stdout!.on("data", (data: Buffer) => {
+    //   for (const line of data.toString().split("\n")) {
+    //     if (!line.includes(this.pathFilter)) continue;
+    //     const m = line.match(/\((\d+)\):\s+C?W\s+(.+)/);
+    //     if (m) {
+    //       const user = this.resolveUser(m[1]) || "unknown";
+    //       this.recentWrites.set(m[2].trim(), user);
+    //     }
+    //   }
+    // });
   }
 
   shutdown() {
@@ -56,7 +56,7 @@ export class UserTrackerService {
         this.pidUserCache.set(pid, user);
         return user;
       }
-    } catch {}
+    } catch { }
     return null;
   }
 }

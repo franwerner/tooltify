@@ -7,7 +7,7 @@ export default defineConfig({
   },
   format: ["esm"],
   dts: true,
-  splitting: true,
+  splitting: false,
   clean: true,
   outDir: "dist",
   external: [

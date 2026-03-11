@@ -3,11 +3,9 @@
   "auth": {
     "secret": "dev-secret-key",
     "users": {
-      "dev": { "hash": "dev" }
+      "dev": {
+        "hash": "dev"
+      }
     }
-  },
-  "claude": {
-    "bin": "claude",
-    "projectRoot": "."
   }
 }
