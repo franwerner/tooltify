@@ -22,9 +22,9 @@ export function rspackTooltify(): RspackPluginInstance {
                 __TOOLTIFY_PACKAGES_DIR__: JSON.stringify(config.packagesDir),
             }).apply(compiler);
 
-            compiler.hooks.compilation.tap("Devtools", (compilation) => {
+            compiler.hooks.compilation.tap("tooltify", (compilation) => {
                 compilation.hooks.processAssets.tap(
-                    { name: "Devtools", stage: compiler.rspack.Compilation.PROCESS_ASSETS_STAGE_SUMMARIZE },
+                    { name: "tooltify", stage: compiler.rspack.Compilation.PROCESS_ASSETS_STAGE_SUMMARIZE },
                     (assets) => {
                         for (const name of Object.keys(assets)) {
                             if (name !== "index.html") continue;
@@ -42,15 +42,15 @@ export function rspackTooltify(): RspackPluginInstance {
                 );
             });
 
-            compiler.hooks.shutdown.tap("Devtools", () => cleanDeps());
+            compiler.hooks.shutdown.tap("tooltify", () => cleanDeps());
 
-            compiler.hooks.watchRun.tap("Devtools", (comp) => {
+            compiler.hooks.watchRun.tap("tooltify", (comp) => {
                 const changed: string[] = comp.modifiedFiles ? [...comp.modifiedFiles] : [];
                 if (changed.length === 0) return;
                 buildTracker.onFilesChanged(changed);
             });
 
-            compiler.hooks.done.tap("Devtools", (stats) => {
+            compiler.hooks.done.tap("tooltify", (stats) => {
                 const hash = stats.hash || Date.now().toString(36);
                 const errors = stats.hasErrors()
                     ? stats.compilation.errors.map((e: any) => e.message)
