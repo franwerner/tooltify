@@ -1,13 +1,15 @@
 {
   "name": "@tooltify/integration-rspack",
-  "version": "0.1.0",
+  "version": "0.1.7",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
     }
   },
   "scripts": {
@@ -17,7 +19,7 @@
   },
   "peerDependencies": {
     "@rspack/core": "^1.7.8",
-    "@tooltify/core": "^0.1.0"
+    "@tooltify/core": "*"
   },
   "devDependencies": {
     "@tooltify/core": "*"

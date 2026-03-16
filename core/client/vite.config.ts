@@ -26,8 +26,8 @@ export default defineConfig({
     "process.env.NODE_ENV": JSON.stringify("production"),
   },
   build: {
-    outDir: path.resolve(__dirname, "./dist"),
-    emptyOutDir: true,
+    outDir: path.resolve(__dirname, "../dist/client"),
+    emptyOutDir: false,
     lib: {
       entry: path.resolve(__dirname, "entry.tsx"),
       name: "client",

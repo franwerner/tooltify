@@ -1,17 +1,21 @@
+import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import type { Compiler, RspackPluginInstance } from "@rspack/core";
-import { startServer } from "@tooltify/core";
+import { startServer, CLIENT_BUNDLE } from "@tooltify/core";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+import { StartOptions } from "../types/StartOptions.interface"
 /**
  * Inyecta el build
  */
 const CUSTOM_JSX_RUNTIME = path.resolve(__dirname, "./helpers/react-transform-source");
 
-export function rspackTooltify(): RspackPluginInstance {
+export function rspackTooltify({ publicUrl }: StartOptions = {}): RspackPluginInstance {
     return {
         apply(compiler: Compiler) {
             const { config, port, buildTracker, cleanDeps } = startServer();
+
+            const TOOLTIFY_URL = publicUrl ? publicUrl : `http://localhost:${port}`
 
             new compiler.rspack.NormalModuleReplacementPlugin(
                 /^react\/jsx-dev-runtime$/,
@@ -26,12 +30,20 @@ export function rspackTooltify(): RspackPluginInstance {
                 compilation.hooks.processAssets.tap(
                     { name: "tooltify", stage: compiler.rspack.Compilation.PROCESS_ASSETS_STAGE_SUMMARIZE },
                     (assets) => {
+                        const clientCode = fs.readFileSync(CLIENT_BUNDLE);
+                        compilation.emitAsset(
+                            "tooltify.js",
+                            new compiler.rspack.sources.RawSource(clientCode),
+                        );
+
                         for (const name of Object.keys(assets)) {
                             if (name !== "index.html") continue;
                             const html = assets[name].source().toString();
                             const injected = html.replace(
                                 "</head>",
-                                `<script>window.__TOOLTIFY_URL__="http://localhost:${port}"</script>\n<script src="http://localhost:${port}/tooltify.js" defer></script>\n</head>`,
+                                `<script>window.__TOOLTIFY_URL__ = "${TOOLTIFY_URL}";</script>
+<script src="/tooltify.js"></script>
+</head>`
                             );
                             compilation.updateAsset(
                                 name,

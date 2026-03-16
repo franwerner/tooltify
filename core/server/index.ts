@@ -12,9 +12,6 @@ import { EditorService } from "./services/editor.service";
 import { UserTrackerService } from "./services/user-tracker.service";
 import { BuildTrackerService } from "./services/build-tracker.service";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const CLIENT_BUNDLE = path.resolve(__dirname, "../client/dist/client.iife.js");
-
 
 export function startServer() {
   const config = loadConfig();
@@ -27,7 +24,6 @@ export function startServer() {
 
   const app = express();
   app.use(cors({ origin: true, credentials: true }));
-  app.get("/tooltify.js", (_req, res) => res.sendFile(CLIENT_BUNDLE));
 
   const server = http.createServer(app);
   const { agentWs, buildsNs } = initSocket(server, auth, vault, config.auth.secret);
