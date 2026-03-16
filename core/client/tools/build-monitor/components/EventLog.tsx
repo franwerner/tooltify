@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { styles, COLORS } from "../styles";
 import { storage } from "../../../shared/utils/storage";
 import type { RebuildEvent } from "../types";
 
@@ -15,11 +14,7 @@ interface Props {
 
 const formatTime = (ts: number) => {
   const d = new Date(ts);
-  return d.toLocaleTimeString("es-AR", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  });
+  return d.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
 };
 
 const shortFile = (file: string) => {
@@ -33,23 +28,16 @@ const extractPlugin = (file: string) => {
   return m ? m[1] : null;
 };
 
+const applyBtnClass = "tfy-bg-transparent tfy-border tfy-border-accent tfy-text-accent tfy-rounded tfy-py-0.5 tfy-px-2 tfy-cursor-pointer tfy-text-[10px] tfy-whitespace-nowrap tfy-font-mono";
+
 const statusBadge = (evt: RebuildEvent, onReload: () => void) => {
   if (evt.status === "building") {
-    return (
-      <span style={{ color: COLORS.orange, fontSize: 10, fontWeight: 600 }}>
-        building...
-      </span>
-    );
+    return <span className="tfy-text-orange tfy-text-[10px] tfy-font-semibold">building...</span>;
   }
   if (evt.status === "error" && evt.errorType === "compile") {
     return (
       <button
-        style={{
-          ...styles.applyBtn,
-          background: `${COLORS.red}20`,
-          color: COLORS.red,
-          borderColor: `${COLORS.red}40`,
-        }}
+        className="tfy-bg-[#f8514920] tfy-text-red tfy-border tfy-border-[#f8514940] tfy-rounded tfy-py-0.5 tfy-px-2 tfy-cursor-pointer tfy-text-[10px] tfy-whitespace-nowrap tfy-font-mono"
         onClick={onReload}
       >
         Reload
@@ -57,14 +45,10 @@ const statusBadge = (evt: RebuildEvent, onReload: () => void) => {
     );
   }
   if (evt.status === "error") {
-    return (
-      <span style={{ color: COLORS.red, fontSize: 10, fontWeight: 600 }}>
-        runtime error
-      </span>
-    );
+    return <span className="tfy-text-red tfy-text-[10px] tfy-font-semibold">runtime error</span>;
   }
   if (evt.applied) {
-    return <span style={styles.eventApplied}>applied</span>;
+    return <span className="tfy-text-green tfy-text-[10px] tfy-font-semibold">applied</span>;
   }
   return null;
 };
@@ -81,38 +65,16 @@ export const EventLog: React.FC<Props> = ({ events, connected, building, onApply
     });
   };
 
+  const dotColor = hasCompileError ? "#f85149" : building ? "#d29922" : connected ? "#3fb950" : "#f85149";
+
   return (
-    <div style={styles.section}>
-      <div
-        style={{
-          ...styles.label,
-          display: "flex",
-          alignItems: "center",
-          gap: 6,
-        }}
-      >
-        <span
-          style={{
-            ...styles.dot,
-            backgroundColor: hasCompileError
-              ? COLORS.red
-              : building
-                ? COLORS.orange
-                : connected
-                  ? COLORS.green
-                  : COLORS.red,
-          }}
-        />
+    <div className="tfy-mb-3">
+      <div className="tfy-flex tfy-items-center tfy-gap-1.5 tfy-text-[10px] tfy-font-semibold tfy-uppercase tfy-text-muted tfy-mb-1 tfy-tracking-[0.5px]">
+        <span className="tfy-inline-block tfy-w-[7px] tfy-h-[7px] tfy-rounded-full" style={{ backgroundColor: dotColor }} />
         Changes{" "}
-        {hasCompileError
-          ? "(compile error)"
-          : building
-            ? "(building...)"
-            : connected
-              ? "(live)"
-              : "(disconnected)"}
+        {hasCompileError ? "(compile error)" : building ? "(building...)" : connected ? "(live)" : "(disconnected)"}
         {(events.length > 0 || hasCompileError) && (
-          <span style={{ color: hasCompileError ? COLORS.red : COLORS.muted, fontWeight: 400 }}>
+          <span className="tfy-font-normal" style={{ color: hasCompileError ? "#f85149" : "#8b949e" }}>
             ({hasCompileError ? compileErrorCount : events.length})
           </span>
         )}
@@ -121,35 +83,19 @@ export const EventLog: React.FC<Props> = ({ events, connected, building, onApply
       {hasCompileError && onShowCompileError && (
         <button
           onClick={onShowCompileError}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 6,
-            width: "100%",
-            background: `${COLORS.red}12`,
-            border: `1px solid ${COLORS.red}30`,
-            borderRadius: 6,
-            padding: "8px 12px",
-            cursor: "pointer",
-            color: COLORS.red,
-            fontSize: 11,
-            fontWeight: 600,
-            fontFamily: "inherit",
-            marginBottom: 8,
-          }}
+          className="tfy-flex tfy-items-center tfy-justify-center tfy-gap-1.5 tfy-w-full tfy-rounded-md tfy-py-2 tfy-px-3 tfy-cursor-pointer tfy-text-red tfy-text-[11px] tfy-font-semibold tfy-font-mono tfy-mb-2 tfy-bg-[#f8514912] tfy-border tfy-border-[#f8514930]"
         >
           Compile error detected — Show Details
         </button>
       )}
 
-      <div style={styles.eventScroll}>
+      <div className="tfy-max-h-[300px] tfy-overflow-y-auto tfy-p-2.5">
         {events.length === 0 || hasCompileError ? (
-          <div style={styles.emptyState}>
+          <div className="tfy-text-muted tfy-text-center tfy-py-5 tfy-text-[11px]">
             {hasCompileError ? "Fix compilation errors to resume" : "No changes yet"}
           </div>
         ) : (
-          <ul style={styles.eventList}>
+          <ul className="tfy-list-none tfy-m-0 tfy-p-0">
             {events.map((evt, i) => {
               const isSelf = currentUser && evt.user === currentUser;
               const isBuilding = evt.status === "building";
@@ -158,46 +104,31 @@ export const EventLog: React.FC<Props> = ({ events, connected, building, onApply
               return (
                 <li
                   key={`${evt.timestamp}-${i}`}
+                  className="tfy-flex tfy-justify-between tfy-items-start tfy-py-1.5 tfy-border-b tfy-border-border tfy-gap-2"
                   style={{
-                    ...styles.eventItem,
-                    ...(hasError ? styles.eventItemError : {}),
-                    ...(isBuilding
-                      ? { borderLeft: `3px solid ${COLORS.orange}`, paddingLeft: 8 }
-                      : {}),
+                    ...(hasError ? { borderLeft: "3px solid #f85149", paddingLeft: 8 } : {}),
+                    ...(isBuilding ? { borderLeft: "3px solid #d29922", paddingLeft: 8 } : {}),
                   }}
                 >
-                  <div style={{ flex: 1, minWidth: 0 }}>
+                  <div className="tfy-flex-1 tfy-min-w-0">
                     {extractPlugin(evt.file) && (
-                      <div
-                        style={{ fontSize: 10, color: COLORS.muted, marginBottom: 1 }}
-                      >
+                      <div className="tfy-text-[10px] tfy-text-muted tfy-mb-px">
                         {extractPlugin(evt.file)}
                       </div>
                     )}
 
                     <div
-                      style={{
-                        ...styles.eventFile,
-                        ...(isBuilding ? { color: COLORS.orange } : {}),
-                      }}
+                      className="tfy-text-text tfy-break-all tfy-flex-1 tfy-text-[11px]"
+                      style={isBuilding ? { color: "#d29922" } : {}}
                     >
                       {shortFile(evt.file)}
                     </div>
 
-                    <div
-                      style={{ display: "flex", gap: 8, marginTop: 2, alignItems: "center" }}
-                    >
-                      <span
-                        style={{
-                          fontWeight: 600,
-                          fontSize: 11,
-                          color: isSelf ? COLORS.green : COLORS.purple,
-                        }}
-                      >
-                        {evt.user}
-                        {isSelf ? " (you)" : ""}
+                    <div className="tfy-flex tfy-gap-2 tfy-mt-0.5 tfy-items-center">
+                      <span className="tfy-font-semibold tfy-text-[11px]" style={{ color: isSelf ? "#3fb950" : "#bc8cff" }}>
+                        {evt.user}{isSelf ? " (you)" : ""}
                       </span>
-                      <span style={styles.eventTime}>
+                      <span className="tfy-text-muted tfy-text-[10px] tfy-whitespace-nowrap">
                         {formatTime(evt.timestamp)}
                       </span>
                     </div>
@@ -206,31 +137,24 @@ export const EventLog: React.FC<Props> = ({ events, connected, building, onApply
                       <>
                         <button
                           onClick={() => toggleError(i)}
-                          style={{
-                            background: "none",
-                            border: "none",
-                            color: COLORS.red,
-                            cursor: "pointer",
-                            fontSize: 10,
-                            padding: "2px 0",
-                            fontFamily: "inherit",
-                          }}
+                          className="tfy-bg-transparent tfy-border-0 tfy-text-red tfy-cursor-pointer tfy-text-[10px] tfy-font-mono tfy-py-0.5 tfy-px-0"
                         >
                           {expanded.has(i) ? "- hide error" : "+ show error"}
                         </button>
                         {expanded.has(i) && (
-                          <div style={styles.eventError}>{evt.error}</div>
+                          <div
+                            className="tfy-rounded tfy-p-1.5 tfy-mt-1 tfy-text-red tfy-text-[10px] tfy-max-h-[80px] tfy-overflow-y-auto tfy-whitespace-pre-wrap tfy-break-all tfy-font-mono tfy-bg-[rgba(248,81,73,0.1)] tfy-border tfy-border-[#f8514933]"
+                          >
+                            {evt.error}
+                          </div>
                         )}
                       </>
                     )}
                   </div>
 
-                  <div style={{ flexShrink: 0 }}>
+                  <div className="tfy-shrink-0">
                     {statusBadge(evt, () => window.location.reload()) || (
-                      <button
-                        style={styles.applyBtn}
-                        onClick={() => onApply(i)}
-                      >
+                      <button className={applyBtnClass} onClick={() => onApply(i)}>
                         Apply
                       </button>
                     )}

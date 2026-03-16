@@ -1,6 +1,5 @@
 import React from "react"
 import Editor, { type OnMount } from "@monaco-editor/react"
-import { COLORS } from "../../../shared/styles/colors"
 
 interface Props {
     content: string | null
@@ -12,12 +11,12 @@ interface Props {
 }
 
 export const EditorArea: React.FC<Props> = ({ content, lang, loading, error, onMount, onChange }) => (
-    <div style={{ flex: 1, overflow: "hidden" }}>
+    <div className="tfy-flex-1 tfy-overflow-hidden">
         {loading && (
-            <div style={{ padding: 20, color: COLORS.muted, fontSize: 11 }}>Loading...</div>
+            <div className="tfy-p-5 tfy-text-muted tfy-text-[11px]">Loading...</div>
         )}
         {error && (
-            <div style={{ padding: 20, color: "#f85149", fontSize: 11 }}>{error}</div>
+            <div className="tfy-p-5 tfy-text-red tfy-text-[11px]">{error}</div>
         )}
         {content !== null && !loading && (
             <Editor

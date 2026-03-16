@@ -1,5 +1,4 @@
 import { useEffect, useRef, useCallback } from "react";
-import { COLORS } from "../styles";
 
 interface Props {
   modalRef: React.RefObject<HTMLElement | null>;
@@ -10,7 +9,7 @@ interface Props {
 const isDevtoolsUI = (t: Node) =>
   (t as Element).closest?.("#devtools-portal-root") != null;
 
-export const HoverOverlay: React.FC<Props> = ({ modalRef, fabRef, color = COLORS.accent }) => {
+export const HoverOverlay: React.FC<Props> = ({ modalRef, fabRef, color = "#58a6ff" }) => {
   const highlightRef = useRef<HTMLDivElement>(null);
   const labelRef = useRef<HTMLDivElement>(null);
   const lastEl = useRef<Element | null>(null);
@@ -99,37 +98,13 @@ export const HoverOverlay: React.FC<Props> = ({ modalRef, fabRef, color = COLORS
     <>
       <div
         ref={highlightRef}
-        style={{
-          display: "none",
-          position: "fixed",
-          pointerEvents: "none",
-          zIndex: 999997,
-          border: `2px solid ${color}`,
-          background: `${color}18`,
-          borderRadius: 3,
-          transition: "top 0.05s, left 0.05s, width 0.05s, height 0.05s",
-        }}
+        className="tfy-fixed tfy-pointer-events-none tfy-z-[999997] tfy-rounded tfy-transition-[top,left,width,height] tfy-duration-[50ms]"
+        style={{ display: "none", border: `2px solid ${color}`, background: `${color}18` }}
       />
       <div
         ref={labelRef}
-        style={{
-          display: "none",
-          position: "fixed",
-          pointerEvents: "none",
-          zIndex: 999997,
-          background: "#1a1d23",
-          color: color,
-          fontSize: 11,
-          fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
-          padding: "2px 8px",
-          borderRadius: 4,
-          border: `1px solid ${COLORS.border}`,
-          whiteSpace: "nowrap",
-          maxWidth: "80vw",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          lineHeight: "18px",
-        }}
+        className="tfy-fixed tfy-pointer-events-none tfy-z-[999997] tfy-bg-surface tfy-text-[11px] tfy-font-mono tfy-py-0.5 tfy-px-2 tfy-rounded tfy-border tfy-border-border tfy-whitespace-nowrap tfy-max-w-[80vw] tfy-overflow-hidden tfy-text-ellipsis tfy-leading-[18px]"
+        style={{ display: "none", color }}
       />
     </>
   );

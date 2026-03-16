@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { fabStyle, COLORS } from "../../../shared/styles/fabStyles";
+import { FabButton } from "../../../shared/components/FabButton";
 
 interface Props {
   active: boolean;
@@ -10,11 +10,11 @@ export const TrackerFab: React.FC<Props> = ({ active, onToggle }) => {
   const [hover, setHover] = useState(false);
 
   return (
-    <button
+    <FabButton
       style={{
-        ...fabStyle,
-        borderColor: active ? COLORS.accent : hover ? COLORS.accent : COLORS.border,
-        color: active ? COLORS.accent : hover ? COLORS.accent : COLORS.muted,
+        right: 62,
+        borderColor: active || hover ? "#58a6ff" : "#30363d",
+        color: active || hover ? "#58a6ff" : "#8b949e",
       }}
       title={active ? "Click any element to inspect" : "Source Tracker (Shift+F2)"}
       onMouseEnter={() => setHover(true)}
@@ -30,6 +30,6 @@ export const TrackerFab: React.FC<Props> = ({ active, onToggle }) => {
         <line x1="1" y1="12" x2="5" y2="12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
         <line x1="19" y1="12" x2="23" y2="12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
       </svg>
-    </button>
+    </FabButton>
   );
 };

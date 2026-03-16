@@ -1,6 +1,4 @@
 import React from "react"
-import type { CSSProperties } from "react"
-import { COLORS, TERM, CO } from "../../../shared/styles/colors"
 
 interface Props {
     lang: string
@@ -11,37 +9,22 @@ interface Props {
     onSave: () => void
 }
 
-const s: Record<string, CSSProperties> = {
-    statusBar: {
-        display: "flex", alignItems: "center", gap: 8, padding: "4px 14px 5px",
-        borderTop: `1px solid ${TERM.border}`, background: TERM.surface,
-        fontSize: 10, color: COLORS.muted,
-    },
-    saveBtn: {
-        background: CO, color: "#fff", border: "none", borderRadius: 4,
-        padding: "2px 12px", fontSize: 10, fontWeight: 600, cursor: "pointer",
-        fontFamily: "inherit", lineHeight: "18px",
-    },
-    saveBtnDisabled: {
-        background: TERM.border, color: COLORS.muted, border: "none", borderRadius: 4,
-        padding: "2px 12px", fontSize: 10, fontWeight: 600, cursor: "not-allowed",
-        fontFamily: "inherit", lineHeight: "18px",
-    },
-}
-
 export const EditorStatusBar: React.FC<Props> = ({
     lang, modified, saving, savedFlash, resolving, onSave
 }) => (
-    <div style={s.statusBar}>
+    <div className="tfy-flex tfy-items-center tfy-gap-2 tfy-pt-1 tfy-px-3.5 tfy-pb-[5px] tfy-border-t tfy-border-term-border tfy-bg-term-surface tfy-text-[10px] tfy-text-muted">
         <span>{lang}</span>
-        {resolving && <span style={{ color: CO }}>Resolving...</span>}
-        <span style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}>
-            {savedFlash && <span style={{ color: "#3fb950" }}>Saved</span>}
-            {saving && <span style={{ color: CO }}>Saving...</span>}
-            <span style={{ color: TERM.border }}>Ctrl+Click import</span>
-            <span style={{ color: TERM.border }}>Ctrl+S</span>
+        {resolving && <span className="tfy-text-co">Resolving...</span>}
+        <span className="tfy-ml-auto tfy-flex tfy-items-center tfy-gap-2">
+            {savedFlash && <span className="tfy-text-green">Saved</span>}
+            {saving && <span className="tfy-text-co">Saving...</span>}
+            <span className="tfy-text-term-border">Ctrl+Click import</span>
+            <span className="tfy-text-term-border">Ctrl+S</span>
             <button
-                style={modified && !saving ? s.saveBtn : s.saveBtnDisabled}
+                className={modified && !saving
+                    ? "tfy-bg-co tfy-text-white tfy-border-0 tfy-rounded tfy-py-0.5 tfy-px-3 tfy-text-[10px] tfy-font-semibold tfy-cursor-pointer tfy-font-mono tfy-leading-[18px]"
+                    : "tfy-bg-hover tfy-text-muted tfy-border-0 tfy-rounded tfy-py-0.5 tfy-px-3 tfy-text-[10px] tfy-font-semibold tfy-cursor-not-allowed tfy-font-mono tfy-leading-[18px]"
+                }
                 disabled={!modified || saving}
                 onClick={onSave}
             >

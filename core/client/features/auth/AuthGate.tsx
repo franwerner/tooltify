@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useAuth } from "./hooks/useAuth";
-import { COLORS } from "../../shared/styles/colors";
 import { LoginForm } from "./LoginForm";
 import { useLogout } from "./hooks/useLogout";
+import { FabButton } from "../../shared/components/FabButton";
 
 interface AuthCtx {
   user: string;
@@ -12,25 +12,6 @@ interface AuthCtx {
 const AuthContext = createContext<AuthCtx>({ user: "", logout: () => { } });
 
 export const useSession = () => useContext(AuthContext);
-
-const fabStyle: React.CSSProperties = {
-  position: "fixed",
-  bottom: 20,
-  right: 20,
-  width: 36,
-  height: 36,
-  borderRadius: "50%",
-  background: COLORS.bg,
-  border: `1px solid ${COLORS.border}`,
-  cursor: "pointer",
-  zIndex: 999998,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  boxShadow: "0 2px 12px rgba(0,0,0,0.3)",
-  padding: 0,
-  color: COLORS.muted,
-};
 
 const LockIcon = () => (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -55,9 +36,9 @@ export const AuthGate: React.FC<{ children: React.ReactNode }> = ({ children }) 
   if (!user) {
     return (
       <>
-        <button style={fabStyle} onClick={() => setShowLogin(true)} title="Devtools Login">
+        <FabButton style={{ right: 20, color: "#8b949e" }} onClick={() => setShowLogin(true)} title="Devtools Login">
           <LockIcon />
-        </button>
+        </FabButton>
         {showLogin && (
           <LoginForm
             onLogin={(loggedUser) => { setUser(loggedUser); setShowLogin(false); }}

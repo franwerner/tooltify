@@ -1,5 +1,5 @@
 import { useEffect, useRef, useCallback } from "react";
-import { CO, CO_DIM } from "../../../shared/styles/colors";
+const CO = "#da7756";
 
 interface Props {
   excludeRefs: React.RefObject<HTMLElement | null>[];
@@ -216,37 +216,13 @@ export const SourcePickOverlay: React.FC<Props> = ({ excludeRefs, dropZoneRef, o
     <>
       <div
         ref={highlightRef}
-        style={{
-          display: "none",
-          position: "fixed",
-          pointerEvents: "none",
-          zIndex: 999997,
-          border: `2px solid ${CO}`,
-          background: `${CO}20`,
-          borderRadius: 3,
-          transition: "top 0.05s, left 0.05s, width 0.05s, height 0.05s",
-        }}
+        className="tfy-fixed tfy-pointer-events-none tfy-z-[999997] tfy-rounded tfy-transition-[top,left,width,height] tfy-duration-[50ms]"
+        style={{ display: "none", border: `2px solid ${CO}`, background: `${CO}20` }}
       />
       <div
         ref={labelRef}
-        style={{
-          display: "none",
-          position: "fixed",
-          pointerEvents: "none",
-          zIndex: 999997,
-          background: "#1a1d23",
-          color: CO,
-          fontSize: 11,
-          fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
-          padding: "2px 8px",
-          borderRadius: 4,
-          border: `1px solid ${CO}60`,
-          whiteSpace: "nowrap",
-          maxWidth: "80vw",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          lineHeight: "18px",
-        }}
+        className="tfy-fixed tfy-pointer-events-none tfy-z-[999997] tfy-bg-surface tfy-text-co tfy-text-[11px] tfy-font-mono tfy-py-0.5 tfy-px-2 tfy-rounded tfy-whitespace-nowrap tfy-max-w-[80vw] tfy-overflow-hidden tfy-text-ellipsis tfy-leading-[18px]"
+        style={{ display: "none", border: `1px solid ${CO}60` }}
       />
     </>
   );

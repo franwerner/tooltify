@@ -1,6 +1,4 @@
 import React from "react"
-import type { CSSProperties } from "react"
-import { COLORS, TERM, CO } from "../../../shared/styles/colors"
 import { openSource } from "../../../shared/utils/openSource"
 
 interface Props {
@@ -12,36 +10,20 @@ interface Props {
     onClose: () => void
 }
 
-const s: Record<string, CSSProperties> = {
-    titleBar: {
-        display: "flex", alignItems: "center", gap: 8, padding: "8px 14px",
-        background: TERM.surface, borderBottom: `1px solid ${TERM.border}`,
-        userSelect: "none", cursor: "grab",
-    },
-    titleDots: { display: "flex", gap: 5 },
-    dot: { width: 10, height: 10, borderRadius: "50%", display: "inline-block" },
-    titlePath: {
-        flex: 1, fontSize: 11, color: COLORS.muted, overflow: "hidden",
-        textOverflow: "ellipsis", whiteSpace: "nowrap",
-    },
-    titleBtn: {
-        background: "none", border: "none", color: COLORS.muted, cursor: "pointer",
-        fontSize: 15, padding: 0, lineHeight: 1, width: 20, height: 20,
-        display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 4,
-    },
-}
-
 export const EditorTitleBar: React.FC<Props> = ({
     fileName, currentPath, currentLine, modified, dragHandlers, onClose
 }) => (
-    <div style={s.titleBar} {...dragHandlers}>
-        <div style={s.titleDots}>
-            <span style={{ ...s.dot, background: "#f85149" }} />
-            <span style={{ ...s.dot, background: "#d29922" }} />
-            <span style={{ ...s.dot, background: "#3fb950" }} />
+    <div
+        className="tfy-flex tfy-items-center tfy-gap-2 tfy-py-2 tfy-px-3.5 tfy-bg-term-surface tfy-border-b tfy-border-term-border tfy-select-none tfy-cursor-grab"
+        {...dragHandlers}
+    >
+        <div className="tfy-flex tfy-gap-[5px]">
+            <span className="tfy-w-2.5 tfy-h-2.5 tfy-rounded-full tfy-inline-block tfy-bg-red" />
+            <span className="tfy-w-2.5 tfy-h-2.5 tfy-rounded-full tfy-inline-block tfy-bg-orange" />
+            <span className="tfy-w-2.5 tfy-h-2.5 tfy-rounded-full tfy-inline-block tfy-bg-green" />
         </div>
         <span
-            style={{ ...s.titlePath, cursor: "default" }}
+            className="tfy-flex-1 tfy-text-[11px] tfy-text-muted tfy-overflow-hidden tfy-text-ellipsis tfy-whitespace-nowrap tfy-cursor-default"
             title={`${currentPath} — Ctrl+Click to open in IDE`}
             onPointerDown={(e) => { if (e.ctrlKey || e.metaKey) e.stopPropagation() }}
             onClick={(e) => {
@@ -54,21 +36,21 @@ export const EditorTitleBar: React.FC<Props> = ({
             onMouseMove={(e) => {
                 const ctrl = e.ctrlKey || e.metaKey
                 e.currentTarget.style.cursor = ctrl ? "pointer" : "default"
-                e.currentTarget.style.color = ctrl ? "#fff" : COLORS.muted
+                e.currentTarget.style.color = ctrl ? "#fff" : "#8b949e"
                 e.currentTarget.style.textDecoration = ctrl ? "underline" : "none"
             }}
             onMouseLeave={(e) => {
                 e.currentTarget.style.cursor = "default"
-                e.currentTarget.style.color = COLORS.muted
+                e.currentTarget.style.color = "#8b949e"
                 e.currentTarget.style.textDecoration = "none"
             }}
         >
             <span>{fileName}</span>
-            {currentPath !== fileName && <span style={{ marginLeft: 6 }}>{currentPath}</span>}
-            {modified && <span style={{ color: "#d29922", marginLeft: 6 }}>●</span>}
+            {currentPath !== fileName && <span className="tfy-ml-1.5">{currentPath}</span>}
+            {modified && <span className="tfy-text-orange tfy-ml-1.5">●</span>}
         </span>
         <button
-            style={s.titleBtn}
+            className="tfy-bg-transparent tfy-border-0 tfy-text-muted tfy-cursor-pointer tfy-text-[15px] tfy-p-0 tfy-leading-none tfy-w-5 tfy-h-5 tfy-flex tfy-items-center tfy-justify-center tfy-rounded"
             onClick={() => { if (!modified || confirm("Unsaved changes. Close?")) onClose() }}
         >
             &times;

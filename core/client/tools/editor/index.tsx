@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react"
 import type { OnMount } from "@monaco-editor/react"
-import { TERM, CO } from "../../shared/styles/colors"
 import { useDragResize } from "../../shared/hooks/useDragResize"
 import { ResizeHandles } from "../../shared/components/ResizeHandles"
 import { useEditorTabs } from "./hooks/useEditorTabs"
@@ -137,7 +136,10 @@ export const MiniEditor: React.FC<Props> = ({ source, onClose }) => {
     const modified = current ? current.content !== current.original : false
 
     return (
-        <div style={{ ...cardStyle, ...containerStyle }}>
+        <div
+            className="tfy-bg-term-bg tfy-border tfy-border-term-border tfy-rounded-[10px] tfy-flex tfy-flex-col tfy-overflow-hidden tfy-shadow-[0_0_0_1px_#da775630,_0_16px_64px_rgba(0,0,0,0.6)] tfy-font-mono tfy-z-[10000000]"
+            style={containerStyle}
+        >
             <ResizeHandles {...resizeHandlers} />
             <EditorTitleBar
                 fileName={fileName}
@@ -175,14 +177,3 @@ export const MiniEditor: React.FC<Props> = ({ source, onClose }) => {
     )
 }
 
-const cardStyle = {
-    background: TERM.bg,
-    border: `1px solid ${TERM.border}`,
-    borderRadius: 10,
-    display: "flex",
-    flexDirection: "column" as const,
-    overflow: "hidden",
-    boxShadow: `0 0 0 1px ${CO}30, 0 16px 64px rgba(0,0,0,0.6)`,
-    fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
-    zIndex: 10000000,
-}

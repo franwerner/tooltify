@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { fabStyle, COLORS } from "../../../shared/styles/fabStyles";
-import { IDE_COLOR } from "../../../shared/styles/colors";
+import { FabButton } from "../../../shared/components/FabButton";
 
 interface Props {
   active: boolean;
@@ -11,12 +10,11 @@ export const EditorFab: React.FC<Props> = ({ active, onClick }) => {
   const [hover, setHover] = useState(false);
 
   return (
-    <button
+    <FabButton
       style={{
-        ...fabStyle,
         right: 104,
-        borderColor: active ? IDE_COLOR : hover ? IDE_COLOR : COLORS.border,
-        color: active ? IDE_COLOR : hover ? IDE_COLOR : COLORS.muted,
+        borderColor: active || hover ? "#3fb950" : "#30363d",
+        color: active || hover ? "#3fb950" : "#8b949e",
       }}
       title={active ? "Click any element to edit" : "Mini IDE (Shift+F3)"}
       onMouseEnter={() => setHover(true)}
@@ -29,6 +27,6 @@ export const EditorFab: React.FC<Props> = ({ active, onClick }) => {
         <polyline points="8 6 2 12 8 18" />
         <line x1="14" y1="4" x2="10" y2="20" />
       </svg>
-    </button>
+    </FabButton>
   );
 };

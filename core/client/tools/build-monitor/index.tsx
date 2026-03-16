@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react"
-import { styles } from "./styles"
 import { useRebuildEvents } from "./hooks/useRebuildEvents"
 import { useSubscribedUsers } from "./hooks/useSubscribedUsers"
 import { useAutoReload } from "./hooks/useAutoReload"
@@ -54,15 +53,26 @@ export const DevtoolsPanel: React.FC = () => {
       />
 
       {open && (
-        <div style={{ ...styles.overlay, ...containerStyle }}>
+        <div
+          className="tfy-bg-[rgba(22,27,34,0.95)] tfy-border tfy-border-border tfy-rounded-[10px] tfy-text-text tfy-font-mono tfy-text-xs tfy-z-[999999] tfy-flex tfy-flex-col tfy-overflow-hidden tfy-shadow-[0_8px_32px_rgba(0,0,0,0.5)] tfy-backdrop-blur"
+          style={containerStyle}
+        >
           <ResizeHandles {...resizeHandlers} />
-          <div style={styles.header} {...dragHandlers}>
+          <div
+            className="tfy-flex tfy-justify-between tfy-items-center tfy-border-b tfy-border-border tfy-font-semibold tfy-text-[13px] tfy-cursor-grab tfy-select-none tfy-py-2.5 tfy-px-3.5"
+            {...dragHandlers}
+          >
             <span>Build Monitor</span>
-            <button style={styles.closeBtn} onClick={() => tool.close("monitor")}>
+            <button
+              className="tfy-bg-transparent tfy-border-0 tfy-text-muted tfy-cursor-pointer tfy-text-base tfy-p-0 tfy-leading-none"
+              onClick={() => tool.close("monitor")}
+            >
               &times;
             </button>
           </div>
-          <div style={styles.body}>
+          <div
+            className="tfy-overflow-y-auto tfy-flex-1 tfy-py-2.5 tfy-px-3.5"
+          >
             <UserConfig
               user={user}
               subscribed={subscribed}

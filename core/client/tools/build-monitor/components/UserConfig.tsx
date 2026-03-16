@@ -1,5 +1,4 @@
 import React from "react";
-import { styles, COLORS } from "../styles";
 
 interface Props {
   user: string;
@@ -9,60 +8,40 @@ interface Props {
   availableUsers: string[];
 }
 
-export const UserConfig: React.FC<Props> = ({
-  user,
-  subscribed,
-  onAdd,
-  onRemove,
-  availableUsers,
-}) => {
-  // Users available to subscribe (exclude self and already subscribed)
-  const subOptions = availableUsers.filter(
-    (u) => u !== user && !subscribed.includes(u)
-  );
+const labelClass = "tfy-block tfy-text-[10px] tfy-font-semibold tfy-uppercase tfy-text-muted tfy-mb-1 tfy-tracking-[0.5px]";
+
+export const UserConfig: React.FC<Props> = ({ user, subscribed, onAdd, onRemove, availableUsers }) => {
+  const subOptions = availableUsers.filter((u) => u !== user && !subscribed.includes(u));
 
   return (
     <>
-      <div style={styles.section}>
-        <label style={styles.label}>User</label>
-        <span style={{ color: COLORS.text, fontSize: 13 }}>{user || "—"}</span>
+      <div className="tfy-mb-3">
+        <label className={labelClass}>User</label>
+        <span className="tfy-text-text tfy-text-[13px]">{user || "—"}</span>
       </div>
 
-      <div style={styles.section}>
-        <label style={styles.label}>Subscribed</label>
+      <div className="tfy-mb-3">
+        <label className={labelClass}>Subscribed</label>
         <select
-          style={styles.input}
+          className="tfy-w-full tfy-bg-input tfy-border tfy-border-border tfy-rounded tfy-text-text tfy-py-1.5 tfy-px-2 tfy-text-xs tfy-font-mono tfy-outline-none tfy-box-border"
           value=""
-          onChange={(e) => {
-            if (e.target.value) onAdd(e.target.value);
-          }}
+          onChange={(e) => { if (e.target.value) onAdd(e.target.value); }}
           disabled={subOptions.length === 0}
         >
-          <option value="">
-            {subOptions.length === 0
-              ? "No users available"
-              : "Add user..."}
-          </option>
-          {subOptions.map((u) => (
-            <option key={u} value={u}>
-              {u}
-            </option>
-          ))}
+          <option value="">{subOptions.length === 0 ? "No users available" : "Add user..."}</option>
+          {subOptions.map((u) => <option key={u} value={u}>{u}</option>)}
         </select>
-        <div style={styles.tags}>
+        <div className="tfy-flex tfy-flex-wrap tfy-gap-1 tfy-mt-1.5">
           {subscribed.map((s) => (
-            <span key={s} style={styles.tag}>
+            <span key={s} className="tfy-inline-flex tfy-items-center tfy-gap-1 tfy-bg-tag tfy-text-accent tfy-rounded tfy-py-0.5 tfy-px-2 tfy-text-[11px]">
               {s}
-              <button
-                onClick={() => onRemove(s)}
-                style={styles.tagRemove}
-              >
+              <button onClick={() => onRemove(s)} className="tfy-bg-transparent tfy-border-0 tfy-text-muted tfy-cursor-pointer tfy-p-0 tfy-text-[13px] tfy-leading-none">
                 ×
               </button>
             </span>
           ))}
           {subscribed.length === 0 && (
-            <span style={styles.muted}>only your changes</span>
+            <span className="tfy-text-muted tfy-text-[11px] tfy-italic">only your changes</span>
           )}
         </div>
       </div>
