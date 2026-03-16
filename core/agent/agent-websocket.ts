@@ -87,7 +87,7 @@ class AgentWebsocket {
             auth: { token: this.token },
             reconnection: true,
             reconnectionDelay: 1000,
-            reconnectionDelayMax: 60000,
+            reconnectionDelayMax: 10000,
         })
 
         this.socket.on("connect_error", (e) => this.onConnectError(e))

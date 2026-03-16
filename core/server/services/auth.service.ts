@@ -41,6 +41,7 @@ export class AuthService {
   }
 
   verifyCredentials(user: string, password: string): void {
+    //TODO: Cambiar a un hash mas seguro.
     const hash = crypto.createHash("sha256").update(this.salt + password).digest("hex");
     const entry = this.vault.get(user);
     if (!entry) throw new TooltifyError("User not found", "USER_NOT_FOUND", 404)

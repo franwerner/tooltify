@@ -1,10 +1,10 @@
 {
   "name": "@tooltify/core",
-  "version": "0.1.0",
+  "version": "0.1.5",
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "build": "npm run build:client && npm run build:lib",
+    "build": "npm run build:lib && npm run build:client",
     "build:lib": "tsup",
     "build:agent": "tsup --entry.agent ./agent/index.ts --no-dts --no-clean",
     "build:cli": "tsup --entry.cli ./cli/index.ts --no-dts --no-clean",
@@ -22,7 +22,7 @@
     }
   },
   "dependencies": {
-    "@clack/prompts": "^1.1.0",
+    "@clack/prompts": "1.0.1",
     "cors": "^2.8.6",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
@@ -58,8 +58,7 @@
     "directory": "core/"
   },
   "files": [
-    "dist",
-    "client/dist"
+    "dist"
   ],
   "keywords": [
     "devtools",

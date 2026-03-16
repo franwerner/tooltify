@@ -47,6 +47,15 @@ export default {
 
   devServer: {
     port: 5173,
-    historyApiFallback: true
+    historyApiFallback: true,
+    // proxy: [
+    //   {
+    //     context: ['/tooltify'],
+    //     target: 'http://localhost:4101',
+    //     changeOrigin: true,
+    //     pathRewrite: { '^/tooltify': '' },
+    //     ws: true,
+    //   },
+    // ],
   }
 };

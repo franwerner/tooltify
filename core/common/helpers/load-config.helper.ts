@@ -4,6 +4,7 @@ import path from "path";
 
 export interface TooltifyConfig {
   port: number;
+  host: string;
   packagesDir: string;
   auth: {
     salt: string;
