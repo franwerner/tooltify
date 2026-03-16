@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react"
 import { apiJson } from "../utils/serverUrl"
-import { TooltifyResponse } from "../../../common/types/tooltify-response"
+import { TooltifyResponse } from "#common/types/tooltify-response"
 
 
 interface FetchState<T> {

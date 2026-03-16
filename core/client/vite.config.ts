@@ -4,6 +4,14 @@ import path from "path";
 
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: [
+      {
+        find: "#common/",
+        replacement: path.resolve(__dirname, "../common") + "/",
+      },
+    ],
+  },
   define: {
     "process.env.NODE_ENV": JSON.stringify("production"),
   },

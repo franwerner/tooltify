@@ -8,7 +8,7 @@ type AliasMap = Record<string, string>
 export function getAliases(): AliasMap {
     return (window as any).__ERXES_ALIASES__ || {}
 }
-
+//TODO: Refactorizar esto
 export function resolveImport(specifier: string, fromFile: string): string | null {
     const fromDir = fromFile.replace(/\/[^/]+$/, "")
 
