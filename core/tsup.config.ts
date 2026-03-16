@@ -17,7 +17,7 @@ const sharedConfig: Partial<Options> = {
   platform: "node",
   splitting: false,
   outDir: "dist",
-  external: ["socket.io", "express", "jsonwebtoken", "cors", "ws"],
+  external: ["socket.io", "express", "jsonwebtoken", "cors", "ws", "@clack/prompts"],
   esbuildPlugins: [commonAliasPlugin],
 }
 
