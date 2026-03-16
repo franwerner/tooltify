@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import { COLORS } from "../../shared/colors";
+import { COLORS } from "../../shared/styles/colors";
 
 export { COLORS };
 

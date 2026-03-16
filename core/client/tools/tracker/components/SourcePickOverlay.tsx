@@ -1,5 +1,5 @@
 import { useEffect, useRef, useCallback } from "react";
-import { CO, CO_DIM } from "../../../shared/colors";
+import { CO, CO_DIM } from "../../../shared/styles/colors";
 
 interface Props {
   excludeRefs: React.RefObject<HTMLElement | null>[];

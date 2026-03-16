@@ -1,5 +1,6 @@
-import { useFetch } from "./useFetch";
-import { storage } from "../tools/build-monitor/storage";
+import { useFetch } from "../../../shared/hooks/useFetch";
+import { storage } from "../../../shared/utils/storage";
+
 
 function useLogout(onSuccess?: () => void) {
   const { state, execute } = useFetch("/auth/logout", {

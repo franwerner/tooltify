@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { fabStyle, COLORS } from "../../../shared/fabStyles";
+import { fabStyle, COLORS } from "../../../shared/styles/fabStyles";
 
 interface Props {
   active: boolean;

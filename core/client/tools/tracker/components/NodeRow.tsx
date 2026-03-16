@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { styles, COLORS } from "../styles";
-import { CO, IDE_COLOR } from "../../../shared/colors";
+import { CO, IDE_COLOR } from "../../../shared/styles/colors";
 import type { SourceNode } from "../types";
 
 interface Props {

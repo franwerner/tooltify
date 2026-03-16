@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { io, type Socket } from "socket.io-client";
-import { SERVER_URL } from "./serverUrl";
+import { SERVER_URL } from "../utils/serverUrl";
 
 export function useSocket(namespace: string) {
   const socketRef = useRef<Socket | null>(null);

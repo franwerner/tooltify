@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useFetch } from "./useFetch";
-import { storage } from "../tools/build-monitor/storage";
+import { storage } from "../../../shared/utils/storage";
+import { useFetch } from "../../../shared/hooks/useFetch";
 
 export function useAuth() {
   const [user, setUser] = useState<string | null>(storage.getUser() || null)

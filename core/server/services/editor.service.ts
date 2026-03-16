@@ -4,13 +4,6 @@ import type { AgentSocketServer } from "../presentation/ws/agent";
 import { CommandActions, type AgentCommand } from "#common/types/agent-ws.types";
 import { TooltifyError } from "#common/errors/tooltify.error";
 
-const LANG_MAP: Record<string, string> = {
-  ts: "typescript", tsx: "typescript",
-  js: "javascript", jsx: "javascript",
-  css: "css", json: "json", graphql: "graphql",
-  md: "markdown", html: "html", scss: "scss", less: "less",
-};
-
 export class EditorService {
   constructor(
     private basePath: string,
@@ -29,7 +22,7 @@ export class EditorService {
     try {
       const content = readFileSync(fullPath, "utf-8");
       const ext = path.extname(fullPath).slice(1);
-      return { content, lang: LANG_MAP[ext] || "plaintext", path: relPath };
+      return { content, ext, path: relPath };
     } catch {
       throw new TooltifyError("File not found", "FILE_NOT_FOUND", 404);
     }

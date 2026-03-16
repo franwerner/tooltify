@@ -1,15 +1,15 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { useAuth } from "../hooks/useAuth";
-import { useLogout } from "../hooks/useLogout";
+import { useAuth } from "./hooks/useAuth";
+import { COLORS } from "../../shared/styles/colors";
 import { LoginForm } from "./LoginForm";
-import { COLORS } from "../shared/colors";
+import { useLogout } from "./hooks/useLogout";
 
 interface AuthCtx {
   user: string;
   logout: () => void;
 }
 
-const AuthContext = createContext<AuthCtx>({ user: "", logout: () => {} });
+const AuthContext = createContext<AuthCtx>({ user: "", logout: () => { } });
 
 export const useSession = () => useContext(AuthContext);
 

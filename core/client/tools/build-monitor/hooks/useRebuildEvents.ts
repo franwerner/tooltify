@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { useSocket } from "../../../shared/useSocket";
-import { storage } from "../storage";
-import { hasActiveCompileError } from "../components/CompileErrorOverlay";
+import { useSocket } from "../../../shared/hooks/useSocket";
+import { storage } from "../../../shared/utils/storage";
 import type { RebuildEvent, EventStatus } from "../types";
 
 const MAX_EVENTS = 100;

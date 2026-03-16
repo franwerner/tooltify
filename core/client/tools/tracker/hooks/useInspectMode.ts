@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
-import { useKeyboardToggle } from "../../build-monitor/hooks/useKeyboardToggle";
+import { useKeyboardToggle } from "../../../shared/hooks/useKeyboardToggle";
 import type { CapturedTree } from "../types";
-import { buildTree, getParentChain } from "../utils";
+import { buildTree, getParentChain } from "../utils/tree";
 
 export function useInspectMode(modalRef: React.RefObject<HTMLElement | null>, fabRef: React.RefObject<HTMLElement | null>) {
   const [active, setActive] = useKeyboardToggle("F2", false, true);

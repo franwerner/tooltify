@@ -2,7 +2,7 @@ import React, { useMemo, useEffect } from "react";
 import { styles, COLORS } from "../styles";
 import { NodeRow } from "./NodeRow";
 import { VirtualTreeView } from "./VirtualTreeView";
-import { flattenTree } from "../utils";
+import { flattenTree } from "../utils/tree";
 import type { CapturedTree } from "../types";
 
 interface Props {

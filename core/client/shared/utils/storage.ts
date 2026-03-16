@@ -1,10 +1,8 @@
 const KEYS = {
-  user: "devtools-user",
-  subscribed: "devtools-subscribed-users",
-  autoReload: "devtools-auto-reload",
+  user: "tooltify-user",
+  subscribed: "tooltify-subscribed-users",
+  autoReload: "tooltify-auto-reload",
 } as const;
-
-import { apiJson } from "../../shared/serverUrl";
 
 export const storage = {
   getUser: (): string => localStorage.getItem(KEYS.user) || "",
@@ -27,12 +25,4 @@ export const storage = {
   setAutoReload: (val: boolean) =>
     localStorage.setItem(KEYS.autoReload, String(val)),
 
-  fetchUsers: async (): Promise<string[]> => {
-    try {
-      const res = await apiJson<string[]>("/auth/users");
-      return res.data;
-    } catch {
-      return [];
-    }
-  },
 };

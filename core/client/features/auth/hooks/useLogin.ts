@@ -1,6 +1,6 @@
 import { useCallback } from "react";
-import { useFetch } from "./useFetch";
-import { storage } from "../tools/build-monitor/storage";
+import { storage } from "../../../shared/utils/storage";
+import { useFetch } from "../../../shared/hooks/useFetch";
 
 function useLogin(onSuccess?: (user: string) => void) {
   const { state, error, execute } = useFetch<{ user: string; token: string; expiry: number }>("/auth/login", {
@@ -12,9 +12,11 @@ function useLogin(onSuccess?: (user: string) => void) {
 
   const login = useCallback((username: string, password: string) => {
     execute({
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user: username, password }),
+      init: {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user: username, password }),
+      }
     })
   }, [execute])
 

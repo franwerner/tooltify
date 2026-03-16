@@ -1,84 +1,52 @@
-import React, { useState, useEffect } from "react";
-import { apiFetch } from "../../../shared/serverUrl";
-import { COLORS } from "../styles";
-import { storage } from "../storage";
+import React, { useState, useEffect } from "react"
+import { apiFetch } from "../../../shared/utils/serverUrl"
+import { COLORS } from "../styles"
+import { storage } from "../../../shared/utils/storage"
+import {
+  notifyCompileError,
+  registerOpenOverlay,
+  unregisterOpenOverlay,
+} from "../utils/compileErrorBus"
 
 interface ErrorFile {
-  file: string;
-  user: string;
+  file: string
+  user: string
 }
 
 interface OverlayState {
-  user: string;
-  file: string;
-  errors: string[];
-  errorFiles: ErrorFile[];
-  fixed: boolean;
+  user: string
+  file: string
+  errors: string[]
+  errorFiles: ErrorFile[]
+  fixed: boolean
 }
 
 const parseError = (err: any): string =>
-  typeof err === "string" ? err : err?.message || JSON.stringify(err);
+  typeof err === "string" ? err : err?.message || JSON.stringify(err)
 
 const parseErrors = (raw: any): string[] => {
-  if (Array.isArray(raw)) return raw.map(parseError);
-  return [parseError(raw)];
-};
+  if (Array.isArray(raw)) return raw.map(parseError)
+  return [parseError(raw)]
+}
 
 const shortPath = (file: string) => {
-  const idx = file.indexOf("/packages/");
-  return idx !== -1 ? file.slice(idx + 1) : file;
-};
-
-/** Shared state so the panel can know if there's an active compile error */
-let compileErrorListeners: Array<(has: boolean) => void> = [];
-let compileErrorCountListeners: Array<(count: number) => void> = [];
-let currentHasError = false;
-let currentErrorCount = 0;
-
-export const onCompileErrorChange = (cb: (has: boolean) => void) => {
-  compileErrorListeners.push(cb);
-  cb(currentHasError);
-  return () => {
-    compileErrorListeners = compileErrorListeners.filter((l) => l !== cb);
-  };
-};
-
-export const onCompileErrorCountChange = (cb: (count: number) => void) => {
-  compileErrorCountListeners.push(cb);
-  cb(currentErrorCount);
-  return () => {
-    compileErrorCountListeners = compileErrorCountListeners.filter((l) => l !== cb);
-  };
-};
-
-const notifyListeners = (has: boolean, count: number) => {
-  currentHasError = has;
-  currentErrorCount = count;
-  compileErrorListeners.forEach((cb) => cb(has));
-  compileErrorCountListeners.forEach((cb) => cb(count));
-};
-
-export const hasActiveCompileError = () => currentHasError;
-
-/** Re-open overlay from outside */
-let openOverlayFn: (() => void) | null = null;
-export const openCompileErrorOverlay = () => openOverlayFn?.();
+  const idx = file.indexOf("/packages/")
+  return idx !== -1 ? file.slice(idx + 1) : file
+}
 
 export const CompileErrorOverlay: React.FC = () => {
-  const [state, setState] = useState<OverlayState | null>(null);
-  const [current, setCurrent] = useState(0);
-  const [visible, setVisible] = useState(true);
+  const [state, setState] = useState<OverlayState | null>(null)
+  const [current, setCurrent] = useState(0)
+  const [visible, setVisible] = useState(true)
 
-  // Expose re-open function
   useEffect(() => {
-    openOverlayFn = () => setVisible(true);
-    return () => { openOverlayFn = null; };
-  }, []);
+    registerOpenOverlay(() => setVisible(true))
+    return () => unregisterOpenOverlay()
+  }, [])
 
-  // Once a compile error is detected, it stays true until page reload
   useEffect(() => {
-    if (state !== null) notifyListeners(true, state.errors.length);
-  }, [state]);
+    if (state !== null) notifyCompileError(true, state.errors.length)
+  }, [state])
 
   useEffect(() => {
     apiFetch("/build/status")
@@ -91,51 +59,51 @@ export const CompileErrorOverlay: React.FC = () => {
             errors: parseErrors(status.errors),
             errorFiles: status.errorFiles || [],
             fixed: false,
-          });
-          setVisible(true);
-          setCurrent(0);
+          })
+          setVisible(true)
+          setCurrent(0)
         }
       })
-      .catch(() => {});
+      .catch(() => {})
 
     const onCompileError = (e: Event) => {
-      const detail = (e as CustomEvent).detail;
-      if (!detail) return;
+      const detail = (e as CustomEvent).detail
+      if (!detail) return
       setState({
         user: detail.user || "unknown",
         file: detail.file || "",
         errors: parseErrors(detail.errors),
         errorFiles: detail.errorFiles || [],
         fixed: false,
-      });
-      setVisible(true);
-      setCurrent(0);
-    };
+      })
+      setVisible(true)
+      setCurrent(0)
+    }
 
     const onCompileOk = () => {
       setState((prev) => {
         if (prev && !prev.fixed) {
           if (storage.getAutoReload()) {
-            setTimeout(() => window.location.reload(), 300);
+            setTimeout(() => window.location.reload(), 300)
           }
-          return { ...prev, fixed: true };
+          return { ...prev, fixed: true }
         }
-        return prev;
-      });
-    };
+        return prev
+      })
+    }
 
-    window.addEventListener("plugin-compile-error", onCompileError);
-    window.addEventListener("plugin-compile-ok", onCompileOk);
+    window.addEventListener("plugin-compile-error", onCompileError)
+    window.addEventListener("plugin-compile-ok", onCompileOk)
     return () => {
-      window.removeEventListener("plugin-compile-error", onCompileError);
-      window.removeEventListener("plugin-compile-ok", onCompileOk);
-    };
-  }, []);
+      window.removeEventListener("plugin-compile-error", onCompileError)
+      window.removeEventListener("plugin-compile-ok", onCompileOk)
+    }
+  }, [])
 
-  if (!state || !visible) return null;
+  if (!state || !visible) return null
 
-  const total = state.errors.length;
-  const safeIdx = Math.min(current, total - 1);
+  const total = state.errors.length
+  const safeIdx = Math.min(current, total - 1)
 
   return (
     <div style={overlayStyle}>
@@ -185,10 +153,12 @@ export const CompileErrorOverlay: React.FC = () => {
 
         {/* Per-error file header + trace */}
         {!state.fixed && (() => {
-          const errText = state.errors[safeIdx] || "";
-          const matched = state.errorFiles.find((ef) => errText.includes(ef.file) || errText.includes(shortPath(ef.file)));
-          const errUser = matched?.user || state.user;
-          const errFile = matched?.file || state.file;
+          const errText = state.errors[safeIdx] || ""
+          const matched = state.errorFiles.find(
+            (ef) => errText.includes(ef.file) || errText.includes(shortPath(ef.file))
+          )
+          const errUser = matched?.user || state.user
+          const errFile = matched?.file || state.file
 
           return (
             <>
@@ -209,7 +179,7 @@ export const CompileErrorOverlay: React.FC = () => {
                 <pre style={traceStyle}>{errText}</pre>
               </div>
             </>
-          );
+          )
         })()}
 
         {/* Footer */}
@@ -227,8 +197,8 @@ export const CompileErrorOverlay: React.FC = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 const overlayStyle: React.CSSProperties = {
   position: "fixed",
@@ -240,7 +210,7 @@ const overlayStyle: React.CSSProperties = {
   justifyContent: "center",
   backdropFilter: "blur(4px)",
   fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
-};
+}
 
 const cardStyle: React.CSSProperties = {
   background: "#1a1d23",
@@ -253,7 +223,7 @@ const cardStyle: React.CSSProperties = {
   flexDirection: "column",
   overflow: "hidden",
   boxShadow: `0 0 40px ${COLORS.red}20`,
-};
+}
 
 const headerStyle: React.CSSProperties = {
   display: "flex",
@@ -261,7 +231,7 @@ const headerStyle: React.CSSProperties = {
   alignItems: "center",
   padding: "14px 20px",
   borderBottom: `1px solid ${COLORS.border}`,
-};
+}
 
 const navBtn: React.CSSProperties = {
   background: "none",
@@ -277,7 +247,7 @@ const navBtn: React.CSSProperties = {
   alignItems: "center",
   justifyContent: "center",
   padding: 0,
-};
+}
 
 const errorFileBar: React.CSSProperties = {
   display: "flex",
@@ -285,7 +255,7 @@ const errorFileBar: React.CSSProperties = {
   gap: 6,
   padding: "8px 20px",
   borderBottom: `1px solid ${COLORS.border}`,
-};
+}
 
 const fixedBanner: React.CSSProperties = {
   background: `${COLORS.green}15`,
@@ -296,13 +266,13 @@ const fixedBanner: React.CSSProperties = {
   color: COLORS.green,
   fontSize: 12,
   lineHeight: 1.5,
-};
+}
 
 const traceContainer: React.CSSProperties = {
   flex: 1,
   overflow: "auto",
   padding: "12px 20px",
-};
+}
 
 const traceStyle: React.CSSProperties = {
   margin: 0,
@@ -312,7 +282,7 @@ const traceStyle: React.CSSProperties = {
   whiteSpace: "pre-wrap",
   wordBreak: "break-word",
   fontFamily: "inherit",
-};
+}
 
 const footerStyle: React.CSSProperties = {
   display: "flex",
@@ -320,7 +290,7 @@ const footerStyle: React.CSSProperties = {
   gap: 10,
   padding: "12px 20px",
   borderTop: `1px solid ${COLORS.border}`,
-};
+}
 
 const dismissBtn: React.CSSProperties = {
   background: "none",
@@ -331,7 +301,7 @@ const dismissBtn: React.CSSProperties = {
   cursor: "pointer",
   fontSize: 12,
   fontFamily: "inherit",
-};
+}
 
 const reloadBtn: React.CSSProperties = {
   background: COLORS.red,
@@ -343,7 +313,7 @@ const reloadBtn: React.CSSProperties = {
   fontSize: 12,
   fontWeight: 600,
   fontFamily: "inherit",
-};
+}
 
 const reloadBtnDisabled: React.CSSProperties = {
   ...reloadBtn,
@@ -351,4 +321,4 @@ const reloadBtnDisabled: React.CSSProperties = {
   color: COLORS.muted,
   cursor: "not-allowed",
   opacity: 0.6,
-};
+}

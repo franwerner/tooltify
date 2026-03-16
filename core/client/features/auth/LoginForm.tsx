@@ -1,13 +1,21 @@
 import React, { useState } from "react";
-import { COLORS } from "../shared/colors";
-import { useFetch } from "../hooks/useFetch";
-import { useLogin } from "../hooks/useLogin";
 import type { CSSProperties } from "react";
+import { useFetch } from "../../shared/hooks/useFetch";
+import { useLogin } from "./hooks/useLogin";
 
 interface Props {
   onLogin: (user: string) => void;
   onClose: () => void;
 }
+
+const COLORS = {
+  accent: "#4f8cff",
+  border: "#23262b",
+  muted: "#a0a4ab",
+  input: "#23262b",
+  text: "#e2e6ee",
+  red: "#ff4f4f"
+};
 
 const s: Record<string, CSSProperties> = {
   overlay: {

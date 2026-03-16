@@ -1,4 +1,4 @@
-import type { TooltifyResponse } from "../../common/types/tooltify-response"
+import { TooltifyResponse } from "../../../common/types/tooltify-response";
 
 export const SERVER_URL: string = (window as any).__TOOLTIFY_URL__ || window.location.origin;
 

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { fabStyle, COLORS } from "../../../shared/fabStyles";
-import { IDE_COLOR } from "../../../shared/colors";
+import { fabStyle, COLORS } from "../../../shared/styles/fabStyles";
+import { IDE_COLOR } from "../../../shared/styles/colors";
 
 interface Props {
   active: boolean;

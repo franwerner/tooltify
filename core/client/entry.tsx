@@ -1,7 +1,7 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
-import { ActiveToolProvider } from "./shared/ActiveToolContext";
-import { AuthGate } from "./components/AuthGate";
+import { ActiveToolProvider } from "./shared/components/ActiveToolContext";
+import { AuthGate } from "./features/auth/AuthGate";
 import { DevtoolsPanel } from "./tools/build-monitor";
 import { DevtoolsPortal } from "./tools/build-monitor/components/DevtoolsPortal";
 import { SourceTracker } from "./tools/tracker";

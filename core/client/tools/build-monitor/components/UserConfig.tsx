@@ -40,8 +40,8 @@ export const UserConfig: React.FC<Props> = ({
         >
           <option value="">
             {subOptions.length === 0
-              ? "sin usuarios disponibles"
-              : "agregar usuario..."}
+              ? "No users available"
+              : "Add user..."}
           </option>
           {subOptions.map((u) => (
             <option key={u} value={u}>

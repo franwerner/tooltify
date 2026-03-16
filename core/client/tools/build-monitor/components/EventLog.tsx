@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { styles, COLORS } from "../styles";
-import { storage } from "../storage";
+import { storage } from "../../../shared/utils/storage";
 import type { RebuildEvent } from "../types";
 
 interface Props {

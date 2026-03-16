@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect, useCallback, useMemo } from "react";
 import { NodeRow } from "./NodeRow";
-import { flattenTree } from "../utils";
+import { flattenTree } from "../utils/tree";
 import type { SourceNode } from "../types";
 
 const ROW_HEIGHT = 28;
