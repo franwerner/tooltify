@@ -13,7 +13,7 @@ function Counter() {
 export default function App() {
   return (
     <div>
-      <h1>Devtools Playground</h1>
+      <h1>Tooltify Playground</h1>
       <Counter />
       <Button />
     </div>

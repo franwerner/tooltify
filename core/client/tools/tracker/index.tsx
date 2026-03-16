@@ -1,5 +1,6 @@
 import React, { useRef, useState, useCallback, useEffect } from "react";
-import { CO, IDE_COLOR } from "../../shared/styles/colors";
+const CO = "#da7756";
+const IDE_COLOR = "#3fb950";
 import { useInspectMode } from "./hooks/useInspectMode";
 import { useEditorPickMode } from "./hooks/useEditorPickMode";
 import { TrackerFab } from "./components/TrackerFab";

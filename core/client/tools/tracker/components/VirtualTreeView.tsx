@@ -50,16 +50,12 @@ export const VirtualTreeView: React.FC<Props> = ({ nodes, onOpen, onEdit }) => {
     <div
       ref={containerRef}
       onScroll={onScroll}
-      style={{ overflowY: "auto", flex: 1 }}
+      className="tfy-overflow-y-auto tfy-flex-1"
     >
-      <div style={{ height: totalHeight, position: "relative" }}>
+      <div className="tfy-relative" style={{ height: totalHeight }}>
         <div
-          style={{
-            position: "absolute",
-            top: startIdx * ROW_HEIGHT,
-            left: 0,
-            right: 0,
-          }}
+          className="tfy-absolute tfy-left-0 tfy-right-0"
+          style={{ top: startIdx * ROW_HEIGHT }}
         >
           {visibleItems.map((item, i) => (
             <div key={startIdx + i} style={{ height: ROW_HEIGHT }}>

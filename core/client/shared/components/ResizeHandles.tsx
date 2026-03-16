@@ -26,7 +26,8 @@ export const ResizeHandles: React.FC<Props> = ({ onStart, onMove, onEnd }) => (
     {edges.map(({ edge, style }) => (
       <div
         key={edge}
-        style={{ position: "absolute", zIndex: 1, ...style }}
+        className="tfy-absolute tfy-z-[1]"
+        style={style}
         onPointerDown={(e) => onStart(edge, e)}
         onPointerMove={onMove}
         onPointerUp={onEnd}

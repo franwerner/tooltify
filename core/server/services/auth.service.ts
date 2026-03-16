@@ -5,6 +5,11 @@ import type { VaultService } from "./vault.service";
 
 const JWT_EXPIRY = 24 * 60 * 60;
 
+interface JWTAuthPayload {
+  user: string
+  fp: string
+}
+
 export class AuthService {
   private secret: string;
   private salt: string;
@@ -16,13 +21,13 @@ export class AuthService {
     this.vault = vault;
   }
 
-  jwtSign(payload: Record<string, unknown>) {
+  jwtSign(payload: JWTAuthPayload) {
     return jwt.sign(payload, this.secret, { expiresIn: JWT_EXPIRY });
   }
 
   jwtVerify(token: string): Record<string, any> | null {
     try {
-      const payload = jwt.verify(token, this.secret) as Record<string, any>;
+      const payload = jwt.verify(token, this.secret) as JWTAuthPayload
       const entry = this.vault.get(payload.user);
       if (!entry || entry.fp !== payload.fp) return null;
       return payload;
