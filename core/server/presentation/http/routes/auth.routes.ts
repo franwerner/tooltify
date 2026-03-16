@@ -19,7 +19,7 @@ export const createAuthRoutes = (auth: AuthService, getSessionUser: (req: any) =
     const data = auth.login(user, password);
     res.setHeader(
       "Set-Cookie",
-      `tooltify_session=${data.token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${auth.expiry}`,
+      `tooltify_session=${data.token}; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=${auth.expiry}`
     );
     res.json({ message: "Login successful", data });
   });
