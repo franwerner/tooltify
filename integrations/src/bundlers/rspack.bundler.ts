@@ -1,17 +1,17 @@
 import path from "path";
 import { fileURLToPath } from "url";
 import type { Compiler, RspackPluginInstance } from "@rspack/core";
-import { startServer, StartOptions } from "@tooltify/core";
+import { startServer } from "@tooltify/core";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 /**
  * Inyecta el build
  */
 const CUSTOM_JSX_RUNTIME = path.resolve(__dirname, "./helpers/react-transform-source");
 
-export function rspackTooltify(opts: StartOptions = {}): RspackPluginInstance {
+export function rspackTooltify(): RspackPluginInstance {
     return {
         apply(compiler: Compiler) {
-            const { config, port, buildTracker, cleanDeps } = startServer(opts);
+            const { config, port, buildTracker, cleanDeps } = startServer();
 
             new compiler.rspack.NormalModuleReplacementPlugin(
                 /^react\/jsx-dev-runtime$/,

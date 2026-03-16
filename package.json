@@ -2,7 +2,11 @@
   "name": "tooltify",
   "version": "0.0.0",
   "type": "module",
-  "scripts": {},
+  "scripts": {
+    "build": "npm run build:core && npm run build:integrations",
+    "build:core": "npm run build --workspace=core",
+    "build:integrations": "npm run build --workspace=integrations"
+  },
   "keywords": [
     "devtools",
     "cli",
@@ -20,6 +24,10 @@
     "integrations",
     "playground"
   ],
+  "overrides": {
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
+  },
   "devDependencies": {
     "@types/node": "^25.4.0",
     "tsup": "^8.5.1",
