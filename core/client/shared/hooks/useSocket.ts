@@ -7,8 +7,12 @@ export function useSocket(namespace: string) {
   const [connected, setConnected] = useState(false);
 
   useEffect(() => {
-    const socket = io(`${window.location.origin}${namespace}`, {
-      path: `${SERVER_URL}/socket.io`,
+    const isAbsolute = /^https?:\/\/|^\/\//.test(SERVER_URL);
+    const url = isAbsolute ? SERVER_URL : window.location.origin;
+    const path = isAbsolute ? "/socket.io" : `${SERVER_URL}/socket.io`;
+
+    const socket = io(`${url}${namespace}`, {
+      path,
       withCredentials: true,
       transports: ["websocket"],
     });
