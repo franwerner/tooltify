@@ -1,3 +1,4 @@
+import { CONFIG_DIRNAME } from "#common/constant/configDirname.constant";
 import { readFileSync } from "fs";
 import path from "path";
 
@@ -14,7 +15,7 @@ const DEFAULT_PORT = 4100
 
 export function loadConfig(): TooltifyConfig {
   const baseDir = process.cwd()
-  const configPath = path.resolve(baseDir, "tooltify.config.json")
+  const configPath = path.resolve(baseDir, CONFIG_DIRNAME)
   let raw: string;
   try {
     raw = readFileSync(configPath, "utf-8")
