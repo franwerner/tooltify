@@ -5,10 +5,10 @@ import express from "express";
 import cors from "cors";
 import { createRouter } from "./presentation/http/routes";
 import { initSocket } from "./presentation/ws";
-import { loadConfig } from "./helpers/load-config.helper";
+import { loadConfig } from "#common/helpers/load-config.helper";
 import { AuthService } from "./services/auth.service";
+import { VaultService } from "./services/vault.service";
 import { EditorService } from "./services/editor.service";
-import { TrackerService } from "./services/tracker.service";
 import { UserTrackerService } from "./services/user-tracker.service";
 import { BuildTrackerService } from "./services/build-tracker.service";
 
@@ -16,32 +16,26 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CLIENT_BUNDLE = path.resolve(__dirname, "../client/dist/client.iife.js");
 
 
-export interface StartOptions {
-  port?: number;
-  configDir?: string;
-}
-
-export function startServer(opts: StartOptions = {}) {
-  const config = loadConfig(opts);
+export function startServer() {
+  const config = loadConfig();
   const port = config.port
 
-  const auth = new AuthService(config.auth);
-  const editor = new EditorService(config.packagesDir);
-  const tracker = new TrackerService(editor);
+  const vault = new VaultService(config.auth.secret);
+  const auth = new AuthService(config.auth, vault);
   const userTracker = new UserTrackerService(config.packagesDir);
   userTracker.start();
-
 
   const app = express();
   app.use(cors({ origin: true, credentials: true }));
   app.get("/tooltify.js", (_req, res) => res.sendFile(CLIENT_BUNDLE));
 
   const server = http.createServer(app);
-  const io = initSocket(server, auth);
+  const { agentWs, buildsNs } = initSocket(server, auth, vault);
+  const editor = new EditorService(config.packagesDir, agentWs);
 
-  const buildTracker = new BuildTrackerService(io.of("/builds"), userTracker);
+  const buildTracker = new BuildTrackerService(buildsNs, userTracker);
 
-  app.use(createRouter({ auth, editor, tracker, userTracker, buildTracker }));
+  app.use(createRouter({ auth, editor, userTracker, buildTracker }));
 
   server.listen(port, () => {
     console.log(`[tooltify] server running on http://localhost:${port}`);
@@ -52,6 +46,7 @@ export function startServer(opts: StartOptions = {}) {
     config,
     port,
     buildTracker,
+    agentWs,
     cleanDeps() {
       userTracker.shutdown();
     },

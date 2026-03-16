@@ -1,20 +1,17 @@
-import { Server as SocketServer } from "socket.io";
-import type { Server } from "http";
-import type { AuthService } from "../../services/auth.service";
+import { Server as SocketServer } from "socket.io"
+import type { Server } from "http"
+import type { AuthService } from "../../services/auth.service"
+import type { VaultService } from "../../services/vault.service"
+import { initAgentWs } from "./agent"
+import { initBuildWs } from "./build"
 
-export function initSocket(httpServer: Server, auth: AuthService) {
-  const io = new SocketServer(httpServer, {
-    cors: { origin: true, credentials: true },
-  });
+export function initSocket(httpServer: Server, auth: AuthService, vault: VaultService) {
+    const io = new SocketServer(httpServer, {
+        cors: { origin: true, credentials: true },
+    })
 
-  io.use((socket, next) => {
-    const cookies = socket.handshake.headers.cookie || "";
-    const match = cookies.match(/devtools_session=([^;]+)/);
-    const user = match ? auth.jwtVerify(match[1])?.user : null;
-    if (!user) return next(new Error("Not authenticated"));
-    socket.data.user = user;
-    next();
-  });
+    const agentWs = initAgentWs(io, vault)
+    const buildsNs = initBuildWs(io, auth)
 
-  return io;
+    return { io, agentWs, buildsNs }
 }

@@ -1,5 +1,8 @@
 import { readFileSync, writeFileSync } from "fs";
 import path from "path";
+import type { AgentWsServer } from "../presentation/ws/agent";
+import { CommandActions, type AgentCommand } from "#common/types/agent-ws.types";
+import { TooltifyError } from "#common/errors/tooltify.error";
 
 const LANG_MAP: Record<string, string> = {
   ts: "typescript", tsx: "typescript",
@@ -9,34 +12,54 @@ const LANG_MAP: Record<string, string> = {
 };
 
 export class EditorService {
-  constructor(private basePath: string) {}
+  constructor(
+    private basePath: string,
+    private agentWs: AgentWsServer,
+  ) { }
 
-  resolvePath(relPath: string): string | null {
-    const fullPath = path.resolve(this.basePath, relPath);
-    if (!fullPath.startsWith(this.basePath) || fullPath.includes("node_modules")) return null;
+  resolvePath(relPath: string): string {
+    const normalized = relPath.startsWith("/") ? relPath.slice(1) : relPath;
+    const fullPath = path.resolve(this.basePath, normalized);
+    if (!fullPath.startsWith(this.basePath)) throw new TooltifyError("Path is outside packagesDir", "INVALID_PATH", 403);
     return fullPath;
   }
 
   read(relPath: string) {
     const fullPath = this.resolvePath(relPath);
-    if (!fullPath) return { ok: false as const, error: "Access denied" };
     try {
       const content = readFileSync(fullPath, "utf-8");
       const ext = path.extname(fullPath).slice(1);
-      return { ok: true as const, content, lang: LANG_MAP[ext] || "plaintext", path: relPath };
+      return { content, lang: LANG_MAP[ext] || "plaintext", path: relPath };
     } catch {
-      return { ok: false as const, error: "File not found" };
+      throw new TooltifyError("File not found", "FILE_NOT_FOUND", 404);
     }
   }
 
   save(relPath: string, content: string, sessionUser?: string) {
     const fullPath = this.resolvePath(relPath);
-    if (!fullPath) return { ok: false as const, error: "Access denied" };
     try {
       writeFileSync(fullPath, content);
-      return { ok: true as const, written: Buffer.byteLength(content), fullPath, user: sessionUser };
+      return { written: Buffer.byteLength(content), fullPath, user: sessionUser };
     } catch (e: any) {
-      return { ok: false as const, error: e.message };
+      throw new TooltifyError(e.message, "WRITE_ERROR", 500);
     }
+  }
+
+  openSource(source: string, username: string) {
+    const match = source.match(/^(.+):(\d+)$/);
+    const relPath = match ? match[1] : source;
+    const line = match ? match[2] : null;
+
+    const fullPath = this.resolvePath(relPath);
+    const target = line ? `${fullPath}:${line}` : fullPath;
+
+    const command: AgentCommand = {
+      action: CommandActions.OPEN_EDITOR,
+      payload: { path: target },
+    };
+
+    this.agentWs.send(username, command);
+
+    return { opened: target };
   }
 }

@@ -3,16 +3,15 @@ import { createAuthRoutes } from "./auth.routes";
 import { createEditorRoutes } from "./editor.routes";
 import { createBuildRoutes } from "./build.routes";
 import { createSessionMiddleware } from "../../../middleware/session";
+import { errorHandler } from "../../../middleware/error-handler";
 import type { AuthService } from "../../../services/auth.service";
 import type { EditorService } from "../../../services/editor.service";
-import type { TrackerService } from "../../../services/tracker.service";
 import type { UserTrackerService } from "../../../services/user-tracker.service";
 import type { BuildTrackerService } from "../../../services/build-tracker.service";
 
 export interface RouterDeps {
   auth: AuthService;
   editor: EditorService;
-  tracker: TrackerService;
   userTracker: UserTrackerService;
   buildTracker: BuildTrackerService;
 }
@@ -28,8 +27,10 @@ export function createRouter(deps: RouterDeps) {
 
   router.use(sessionGuard);
 
-  router.use("/editor", createEditorRoutes(deps.editor, deps.tracker, deps.userTracker));
+  router.use("/editor", createEditorRoutes(deps.editor, deps.userTracker));
   router.use("/build", createBuildRoutes(deps.buildTracker));
+
+  router.use(errorHandler);
 
   return router;
 }
