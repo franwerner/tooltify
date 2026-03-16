@@ -1,24 +1,35 @@
 
+import jwt from "jsonwebtoken"
 import type { Server as SocketServer, Socket } from "socket.io"
 import type { AgentCommand } from "#common/types/agent-ws.types"
 import { TooltifyError } from "#common/errors/tooltify.error"
 import type { VaultService } from "../../services/vault.service"
 
+interface AgentTokenPayload {
+    agentName: string
+    hash: string
+}
+
 class AgentSocketServer {
 
     private agents = new Map<string, Socket>()
 
-    constructor(io: SocketServer, private vault: VaultService) {
+    constructor(io: SocketServer, private vault: VaultService, private secret: string) {
         const ns = io.of("/agent")
         ns.use((socket, next) => this.onAuth(socket, next))
         ns.on("connection", (socket) => this.onConnection(socket))
     }
 
     private onAuth(socket: Socket, next: (err?: Error) => void) {
-        const { agentName, hash } = socket.handshake.auth
-        if (!agentName || !hash) return next(new Error("Missing credentials"))
-        socket.data = { agentName, hash }
-        next()
+        const { token } = socket.handshake.auth
+        if (!token) return next(new Error("Missing token"))
+        try {
+            const payload = jwt.verify(token, this.secret) as AgentTokenPayload
+            socket.data = { agentName: payload.agentName, hash: payload.hash }
+            next()
+        } catch {
+            next(new Error("Invalid token"))
+        }
     }
 
     private onConnection(socket: Socket) {
@@ -46,8 +57,8 @@ class AgentSocketServer {
     }
 }
 
-function initAgentWs(io: SocketServer, vault: VaultService): AgentSocketServer {
-    return new AgentSocketServer(io, vault)
+function initAgentWs(io: SocketServer, vault: VaultService, secret: string): AgentSocketServer {
+    return new AgentSocketServer(io, vault, secret)
 }
 
 export { initAgentWs, AgentSocketServer }

@@ -11,7 +11,7 @@ interface AgentWebsocketOptions {
     port: number
     ideType: IDEType
     remote: boolean
-    hash: string
+    token: string
 }
 
 class AgentWebsocket {
@@ -20,12 +20,12 @@ class AgentWebsocket {
     private commandAdapter: ICommandAdapter
     private agentName: string
     private port: number
-    private hash: string
+    private token: string
 
-    constructor({ agentName, port, ideType, remote, hash }: AgentWebsocketOptions) {
+    constructor({ agentName, port, ideType, remote, token }: AgentWebsocketOptions) {
         this.agentName = agentName
         this.port = port
-        this.hash = hash
+        this.token = token
         this.commandAdapter = CommandFactory.create({
             ide: ideType,
             os: process.platform,
@@ -84,7 +84,7 @@ class AgentWebsocket {
 
     private connect() {
         this.socket = io(`http://localhost:${this.port}/agent`, {
-            auth: { agentName: this.agentName, hash: this.hash },
+            auth: { token: this.token },
             reconnection: true,
             reconnectionDelay: 1000,
             reconnectionDelayMax: 60000,

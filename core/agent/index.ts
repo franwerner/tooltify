@@ -1,4 +1,5 @@
 
+import jwt from "jsonwebtoken"
 import { loadConfig } from "#common/helpers/load-config.helper"
 import { AgentWebsocket } from "./agent-websocket"
 import type { IDEType } from "./command-factory"
@@ -15,12 +16,16 @@ const getEnv = <K extends keyof EnvMap>(key: K): EnvMap[K] => {
     return value as EnvMap[K]
 }
 
-const { port } = loadConfig()
+const { port, auth } = loadConfig()
+
+const agentName = getEnv("AGENT_NAME")
+const hash = getEnv("AGENT_HASH")
+const token = jwt.sign({ agentName, hash }, auth.secret)
 
 new AgentWebsocket({
-    agentName: getEnv("AGENT_NAME"),
+    agentName,
     port,
     ideType: getEnv("IDE_TYPE"),
     remote: process.env.REMOTE === "true",
-    hash: getEnv("AGENT_HASH"),
+    token,
 }).start()

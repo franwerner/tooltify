@@ -30,7 +30,7 @@ export function startServer() {
   app.get("/tooltify.js", (_req, res) => res.sendFile(CLIENT_BUNDLE));
 
   const server = http.createServer(app);
-  const { agentWs, buildsNs } = initSocket(server, auth, vault);
+  const { agentWs, buildsNs } = initSocket(server, auth, vault, config.auth.secret);
   const editor = new EditorService(config.packagesDir, agentWs);
 
   const buildTracker = new BuildTrackerService(buildsNs, userTracker);

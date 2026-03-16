@@ -43,7 +43,8 @@ export class AuthService {
   verifyCredentials(user: string, password: string): void {
     const hash = crypto.createHash("sha256").update(this.salt + password).digest("hex");
     const entry = this.vault.get(user);
-    if (!entry || entry.hash !== hash) throw new TooltifyError("Invalid credentials", "INVALID_CREDENTIALS", 401);
+    if (!entry) throw new TooltifyError("User not found", "USER_NOT_FOUND", 404)
+    if (entry.hash !== hash) throw new TooltifyError("Invalid credentials", "INVALID_CREDENTIALS", 401);
   }
 
   login(user: string, password: string) {
