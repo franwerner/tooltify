@@ -1,5 +1,5 @@
 import { HtmlRspackPlugin } from "@rspack/core";
-import { rspackTooltify } from "@tooltify/integration/rspack";
+import { rspackTooltify } from "@tooltify/integration-rspack";
 import { createRequire } from "module";
 
 const require = createRequire(import.meta.url);

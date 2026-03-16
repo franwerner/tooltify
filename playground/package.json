@@ -16,7 +16,7 @@
     "@rspack/cli": "^1.7.8",
     "@rspack/core": "^1.7.8",
     "@tooltify/core": "*",
-    "@tooltify/integration": "*",
+    "@tooltify/integration-rspack": "*",
     "tsx": "^4.21.0"
   }
 }
