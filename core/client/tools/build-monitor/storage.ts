@@ -4,7 +4,7 @@ const KEYS = {
   autoReload: "devtools-auto-reload",
 } as const;
 
-import { apiFetch } from "../../shared/serverUrl";
+import { apiJson } from "../../shared/serverUrl";
 
 export const storage = {
   getUser: (): string => localStorage.getItem(KEYS.user) || "",
@@ -29,8 +29,8 @@ export const storage = {
 
   fetchUsers: async (): Promise<string[]> => {
     try {
-      const res = await apiFetch("/auth/users");
-      return await res.json();
+      const res = await apiJson<string[]>("/auth/users");
+      return res.data;
     } catch {
       return [];
     }

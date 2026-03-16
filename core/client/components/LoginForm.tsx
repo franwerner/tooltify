@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { COLORS } from "../shared/colors";
-import { storage } from "../tools/build-monitor/storage";
+import { useFetch } from "../hooks/useFetch";
+import { useLogin } from "../hooks/useLogin";
 import type { CSSProperties } from "react";
 
 interface Props {
-  onLogin: (user: string, password: string) => Promise<string | null>;
+  onLogin: (user: string) => void;
   onClose: () => void;
 }
 
@@ -81,50 +82,47 @@ const s: Record<string, CSSProperties> = {
     cursor: "pointer",
     fontFamily: "inherit",
   },
-  error: {
-    color: COLORS.red,
+  message: {
     fontSize: 12,
     textAlign: "center",
     marginBottom: 12,
   },
 };
 
+const BUTTON_LABEL: Record<string, string> = {
+  idle: "Login",
+  loading: "Logging in...",
+  success: "Success",
+  error: "Try again",
+}
+
 export const LoginForm: React.FC<Props> = ({ onLogin, onClose }) => {
-  const [users, setUsers] = useState<string[]>([]);
-  const [user, setUser] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const { data: users } = useFetch<string[]>("/auth/users");
+  const { login, state, error } = useLogin(onLogin);
+  const [{ user, password }, setForm] = useState({
+    user: "",
+    password: ""
+  })
 
-  useEffect(() => {
-    storage.fetchUsers().then(setUsers);
-  }, []);
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
-    setLoading(true);
-    setError("");
-    const err = await onLogin(user, password);
-    if (err) {
-      setError(err);
-      setLoading(false);
-    }
+    login(user, password);
   };
 
   return (
     <div style={s.overlay} onClick={onClose}>
       <form style={s.card} onSubmit={handleSubmit} onClick={(e) => e.stopPropagation()}>
-        <div style={s.title}>Devtools Login</div>
+        <div style={s.title}>Tooltify Login</div>
 
         <label style={s.label}>User</label>
         <select
           style={s.select}
           value={user}
-          onChange={(e) => setUser(e.target.value)}
+          onChange={(e) => setForm(prev => ({ ...prev, user: e.target.value }))}
         >
           <option value="">-- select user --</option>
-          {users.map((u) => (
+          {(users ?? []).map((u) => (
             <option key={u} value={u}>{u}</option>
           ))}
         </select>
@@ -134,15 +132,24 @@ export const LoginForm: React.FC<Props> = ({ onLogin, onClose }) => {
           style={s.input}
           type="password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => setForm(prev => ({ ...prev, password: e.target.value }))}
           placeholder="Enter password"
           autoFocus
         />
 
-        {error && <div style={s.error}>{error}</div>}
+        {state === "error" && (
+          <div style={{ ...s.message, color: COLORS.red }}>{error}</div>
+        )}
+        {state === "success" && (
+          <div style={{ ...s.message, color: COLORS.accent }}>Logged in successfully</div>
+        )}
 
-        <button style={s.button} type="submit" disabled={loading || !user}>
-          {loading ? "Logging in..." : "Login"}
+        <button
+          style={s.button}
+          type="submit"
+          disabled={state === "loading" || state === "success" || !user}
+        >
+          {BUTTON_LABEL[state]}
         </button>
       </form>
     </div>

@@ -1,14 +1,15 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { useAuth } from "../hooks/useAuth";
+import { useLogout } from "../hooks/useLogout";
 import { LoginForm } from "./LoginForm";
 import { COLORS } from "../shared/colors";
 
 interface AuthCtx {
   user: string;
-  logout: () => Promise<void>;
+  logout: () => void;
 }
 
-const AuthContext = createContext<AuthCtx>({ user: "", logout: async () => {} });
+const AuthContext = createContext<AuthCtx>({ user: "", logout: () => {} });
 
 export const useSession = () => useContext(AuthContext);
 
@@ -39,23 +40,29 @@ const LockIcon = () => (
 );
 
 export const AuthGate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, loading, login, logout } = useAuth();
+  const { user: sessionUser, loading } = useAuth();
+  const [user, setUser] = useState<string | null>(null);
   const [showLogin, setShowLogin] = useState(false);
+
+  const { logout } = useLogout(() => setUser(null));
+
+  useEffect(() => {
+    if (!loading) setUser(sessionUser);
+  }, [sessionUser, loading]);
 
   if (loading) return null;
 
   if (!user) {
     return (
       <>
-        <button
-          style={fabStyle}
-          onClick={() => setShowLogin(true)}
-          title="Devtools Login"
-        >
+        <button style={fabStyle} onClick={() => setShowLogin(true)} title="Devtools Login">
           <LockIcon />
         </button>
         {showLogin && (
-          <LoginForm onLogin={login} onClose={() => setShowLogin(false)} />
+          <LoginForm
+            onLogin={(loggedUser) => { setUser(loggedUser); setShowLogin(false); }}
+            onClose={() => setShowLogin(false)}
+          />
         )}
       </>
     );
