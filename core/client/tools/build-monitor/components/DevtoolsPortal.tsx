@@ -1,8 +1,9 @@
-import { useRef, useEffect } from "react";
+import { useRef } from "react";
 import { createPortal } from "react-dom";
 import tailwindCss from "../../../styles/tailwind.css?inline";
 
 const CONTAINER_ID = "devtools-portal-root";
+const STYLE_ID = "tooltify-tw";
 
 const getContainer = (): HTMLDivElement => {
   let container = document.getElementById(CONTAINER_ID) as HTMLDivElement | null;
@@ -19,21 +20,19 @@ const getContainer = (): HTMLDivElement => {
     container.style.pointerEvents = "none";
     document.body.appendChild(container);
   }
+
+  if (!document.getElementById(STYLE_ID)) {
+    const style = document.createElement("style");
+    style.id = STYLE_ID;
+    style.textContent = tailwindCss;
+    container.appendChild(style);
+  }
+
   return container;
 };
 
 export const DevtoolsPortal: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const elRef = useRef<HTMLDivElement>(getContainer());
-
-  useEffect(() => {
-    const styleId = "tooltify-tw";
-    if (!document.getElementById(styleId)) {
-      const style = document.createElement("style");
-      style.id = styleId;
-      style.textContent = tailwindCss;
-      elRef.current.appendChild(style);
-    }
-  }, []);
 
   return createPortal(
     <div className="tfy-pointer-events-auto">{children}</div>,

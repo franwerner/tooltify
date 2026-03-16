@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useFetch } from "../../shared/hooks/useFetch";
+import { FetchStatus, useFetch } from "../../shared/hooks/useFetch";
 import { useLogin } from "./hooks/useLogin";
 
 interface Props {
@@ -7,16 +7,16 @@ interface Props {
   onClose: () => void;
 }
 
-const BUTTON_LABEL: Record<string, string> = {
-  idle: "Login",
-  loading: "Logging in...",
-  success: "Success",
-  error: "Try again",
+const BUTTON_LABEL: Record<FetchStatus, string> = {
+  [FetchStatus.IDLE]: "Login",
+  [FetchStatus.LOADING]: "Logging in...",
+  [FetchStatus.SUCCESS]: "Success",
+  [FetchStatus.ERROR]: "Try again",
 }
 
 export const LoginForm: React.FC<Props> = ({ onLogin, onClose }) => {
   const { data: users } = useFetch<string[]>("/auth/users");
-  const { login, state, error } = useLogin(onLogin);
+  const { login, status, error } = useLogin(onLogin);
   const [{ user, password }, setForm] = useState({
     user: "",
     password: ""
@@ -62,19 +62,19 @@ export const LoginForm: React.FC<Props> = ({ onLogin, onClose }) => {
           autoFocus
         />
 
-        {state === "error" && (
+        {status === FetchStatus.ERROR && (
           <div className="tfy-text-xs tfy-text-center tfy-mb-3 tfy-text-[#ff4f4f]">{error}</div>
         )}
-        {state === "success" && (
+        {status === FetchStatus.SUCCESS && (
           <div className="tfy-text-xs tfy-text-center tfy-mb-3 tfy-text-[#4f8cff]">Logged in successfully</div>
         )}
 
         <button
           className="tfy-w-full tfy-bg-[#4f8cff] tfy-text-white tfy-border-0 tfy-rounded-md tfy-text-[13px] tfy-font-semibold tfy-cursor-pointer tfy-py-[9px] tfy-font-mono"
           type="submit"
-          disabled={state === "loading" || state === "success" || !user}
+          disabled={status === FetchStatus.LOADING || status === FetchStatus.SUCCESS || !user}
         >
-          {BUTTON_LABEL[state]}
+          {BUTTON_LABEL[status]}
         </button>
       </form>
     </div>

@@ -3,7 +3,7 @@ import { storage } from "../../../shared/utils/storage";
 import { useFetch } from "../../../shared/hooks/useFetch";
 
 function useLogin(onSuccess?: (user: string) => void) {
-  const { state, error, execute } = useFetch<{ user: string; token: string; expiry: number }>("/auth/login", {
+  const { status, error, execute } = useFetch<{ user: string; token: string; expiry: number }>("/auth/login", {
     lazy: true,
     callbacks: {
       onSuccess: ({ user }) => { storage.setUser(user); onSuccess?.(user) },
@@ -20,7 +20,7 @@ function useLogin(onSuccess?: (user: string) => void) {
     })
   }, [execute])
 
-  return { login, state, error }
+  return { login, status, error }
 }
 
 export { useLogin }

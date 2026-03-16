@@ -3,6 +3,7 @@ import { useAuth } from "./hooks/useAuth";
 import { LoginForm } from "./LoginForm";
 import { useLogout } from "./hooks/useLogout";
 import { FabButton } from "../../shared/components/FabButton";
+import { DevtoolsPortal } from "../../tools/build-monitor/components/DevtoolsPortal";
 
 interface AuthCtx {
   user: string;
@@ -35,7 +36,7 @@ export const AuthGate: React.FC<{ children: React.ReactNode }> = ({ children }) 
 
   if (!user) {
     return (
-      <>
+      <DevtoolsPortal>
         <FabButton style={{ right: 20, color: "#8b949e" }} onClick={() => setShowLogin(true)} title="Devtools Login">
           <LockIcon />
         </FabButton>
@@ -45,7 +46,7 @@ export const AuthGate: React.FC<{ children: React.ReactNode }> = ({ children }) 
             onClose={() => setShowLogin(false)}
           />
         )}
-      </>
+      </DevtoolsPortal>
     );
   }
 

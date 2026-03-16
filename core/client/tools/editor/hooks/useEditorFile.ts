@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react"
-import { useFetch } from "../../../shared/hooks/useFetch"
+import { FetchStatus, useFetch } from "../../../shared/hooks/useFetch"
 
 const LANG_MAP: Record<string, string> = {
     ts: "typescript", tsx: "typescript",
@@ -29,7 +29,7 @@ interface UseEditorFileOptions {
 export function useEditorFile({ onLoaded, onLoadError, onSaved }: UseEditorFileOptions) {
     const [savedFlash, setSavedFlash] = useState(false)
 
-    const { execute: execLoad, state: loadState } = useFetch<FileResponse>("/editor/read", {
+    const { execute: execLoad, status: loadStatus } = useFetch<FileResponse>("/editor/read", {
         lazy: true,
         callbacks: {
             onSuccess: ({ content, ext, path }) => onLoaded({ content, path, lang: LANG_MAP[ext] || "plaintext" }),
@@ -37,7 +37,7 @@ export function useEditorFile({ onLoaded, onLoadError, onSaved }: UseEditorFileO
         }
     })
 
-    const { execute: execSave, state: saveState } = useFetch<void>("/editor/save", {
+    const { execute: execSave, status: saveStatus } = useFetch<void>("/editor/save", {
         lazy: true,
         callbacks: {
             onSuccess: () => {
@@ -65,8 +65,8 @@ export function useEditorFile({ onLoaded, onLoadError, onSaved }: UseEditorFileO
     return {
         loadFile,
         save,
-        loading: loadState === "loading",
-        saving: saveState === "loading",
+        loading: loadStatus === FetchStatus.LOADING,
+        saving: saveStatus === FetchStatus.LOADING,
         savedFlash,
     }
 }
