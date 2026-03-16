@@ -1,17 +1,19 @@
 {
-  "name": "@tooltify/integration",
+  "name": "@tooltify/integration-rspack",
   "version": "0.1.0",
   "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "scripts": {
     "build:lib": "tsup",
     "build": "npm run build:lib",
     "prepublishOnly": "npm run build"
-  },
-  "exports": {
-    "./rspack": {
-      "import": "./dist/rspack.js",
-      "types": "./dist/rspack.d.ts"
-    }
   },
   "peerDependencies": {
     "@rspack/core": "^1.7.8",
@@ -20,21 +22,20 @@
   "devDependencies": {
     "@tooltify/core": "*"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/franwerner/tooltify/tree/master/integrations"
-  },
   "files": [
     "dist"
   ],
   "keywords": [
     "devtools",
-    "cli",
-    "tools",
-    "typescript",
-    "integrations"
+    "rspack",
+    "tooltify",
+    "integration"
   ],
   "author": "Franco Werner",
   "license": "MIT",
-  "description": ""
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/franwerner/tooltify.git",
+    "directory": "integrations/rspack"
+  }
 }
