@@ -1,6 +1,6 @@
 import type { TooltifyResponse } from "../../common/types/tooltify-response"
 
-export const SERVER_URL: string = (window as any).__DEVTOOLS_URL__ || window.location.origin;
+export const SERVER_URL: string = (window as any).__TOOLTIFY_URL__ || window.location.origin;
 
 export const apiFetch = (path: string, init?: RequestInit) =>
   fetch(`${SERVER_URL}${path}`, { credentials: "include", ...init });

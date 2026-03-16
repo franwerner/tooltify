@@ -19,7 +19,7 @@ export function rspackTooltify(): RspackPluginInstance {
             ).apply(compiler);
 
             new compiler.rspack.DefinePlugin({
-                __DEVTOOLS_PACKAGES_DIR__: JSON.stringify(config.packagesDir),
+                __TOOLTIFY_PACKAGES_DIR__: JSON.stringify(config.packagesDir),
             }).apply(compiler);
 
             compiler.hooks.compilation.tap("Devtools", (compilation) => {
@@ -31,7 +31,7 @@ export function rspackTooltify(): RspackPluginInstance {
                             const html = assets[name].source().toString();
                             const injected = html.replace(
                                 "</head>",
-                                `<script>window.__DEVTOOLS_URL__="http://localhost:${port}"</script>\n<script src="http://localhost:${port}/tooltify.js" defer></script>\n</head>`,
+                                `<script>window.__TOOLTIFY_URL__="http://localhost:${port}"</script>\n<script src="http://localhost:${port}/tooltify.js" defer></script>\n</head>`,
                             );
                             compilation.updateAsset(
                                 name,

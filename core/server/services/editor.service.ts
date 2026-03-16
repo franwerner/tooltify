@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from "fs";
 import path from "path";
-import type { AgentWsServer } from "../presentation/ws/agent";
+import type { AgentSocketServer } from "../presentation/ws/agent";
 import { CommandActions, type AgentCommand } from "#common/types/agent-ws.types";
 import { TooltifyError } from "#common/errors/tooltify.error";
 
@@ -14,7 +14,7 @@ const LANG_MAP: Record<string, string> = {
 export class EditorService {
   constructor(
     private basePath: string,
-    private agentWs: AgentWsServer,
+    private agentWs: AgentSocketServer,
   ) { }
 
   resolvePath(relPath: string): string {
