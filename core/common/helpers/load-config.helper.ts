@@ -4,7 +4,6 @@ import path from "path";
 
 export interface TooltifyConfig {
   port: number;
-  configDir: string
   packagesDir: string;
   auth: {
     salt: string;
@@ -25,7 +24,7 @@ export function loadConfig(): TooltifyConfig {
 
   const config: TooltifyConfig = JSON.parse(raw)
 
-  config.packagesDir = path.resolve(process.cwd(), config.packagesDir);
+  config.packagesDir = path.resolve(baseDir, config.packagesDir);
 
   config.port ||= DEFAULT_PORT
 
