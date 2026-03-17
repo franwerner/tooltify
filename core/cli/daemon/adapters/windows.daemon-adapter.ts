@@ -19,12 +19,16 @@ class WindowsDaemonAdapter implements IDaemonAdapter {
     }
 
     start(options: DaemonOptions): number {
-        spawn(
-            "powershell",
-            ["-Command", `Start-Process node -ArgumentList '${options.agentEntry}' -WorkingDirectory '${options.cwd}' -RedirectStandardOutput '${options.logFile}' -RedirectStandardError '${options.logFile}' -WindowStyle Hidden`],
-            { env: options.env }
-        )
-        return 0
+        const logFd = fs.openSync(options.logFile, "a")
+        const child = spawn("node", [options.agentEntry], {
+            detached: true,
+            stdio: ["ignore", logFd, logFd],
+            cwd: options.cwd,
+            env: options.env,
+        })
+        child.unref()
+        fs.closeSync(logFd)
+        return child.pid!
     }
 }
 
