@@ -9,7 +9,7 @@ export function jsxDEV(
   isStaticChildren: boolean,
   source?: { fileName?: string; lineNumber?: number; columnNumber?: number },
 ) {
-  if (typeof type === "string" && source?.fileName) {
+  if (type !== Fragment && source?.fileName) {
     const filePath = source.fileName;
     const line = source.lineNumber || 0;
     const idx = filePath.indexOf(__TOOLTIFY_PACKAGES_DIR__);
