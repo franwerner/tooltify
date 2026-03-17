@@ -3,6 +3,7 @@ import path from "path";
 import type { AgentSocketServer } from "../presentation/ws/agent";
 import { CommandActions, type AgentCommand } from "#common/types/agent-ws.types";
 import { TooltifyError } from "#common/errors/tooltify.error";
+import { normalizeRelativePath } from "#common/helpers/load-config.helper";
 
 export class EditorService {
   constructor(
@@ -11,9 +12,17 @@ export class EditorService {
   ) { }
 
   resolvePath(relPath: string): string {
-    const normalized = relPath.startsWith("/") ? relPath.slice(1) : relPath;
+    const normalized = normalizeRelativePath(relPath);
     const fullPath = path.resolve(this.basePath, normalized);
-    if (!fullPath.startsWith(this.basePath)) throw new TooltifyError("Path is outside packagesDir", "INVALID_PATH", 403);
+    /**
+     * Se agrega path.sep al final de basePath para una verificación correcta
+     *
+     * Sin path.sep (incorrecto):
+     *   basePath = "C:/Users/.../playground/src"
+     *   fullPath = "C:/Users/.../playground/src-private/secrets.ts"  ← resuelto desde traversal
+     *   fullPath.startsWith(basePath) → true ✗ (falso positivo, "src-private" empieza con "src")
+     */
+    if (!fullPath.startsWith(this.basePath + path.sep)) throw new TooltifyError("Path is outside packagesDir", "INVALID_PATH", 403);
     return fullPath;
   }
 
