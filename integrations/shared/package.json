@@ -1,0 +1,40 @@
+{
+  "name": "@tooltify/integration-shared",
+  "version": "0.1.2",
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./source-transformers/react": {
+      "types": "./dist/source-transformers/react.d.ts",
+      "import": "./dist/source-transformers/react.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "prepublishOnly": "npm run build"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "@tooltify/core": "*"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "tooltify",
+    "integration",
+    "shared"
+  ],
+  "author": "Franco Werner",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/franwerner/tooltify.git",
+    "directory": "integrations/shared"
+  }
+}
