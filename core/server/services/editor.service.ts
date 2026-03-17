@@ -3,7 +3,7 @@ import path from "path";
 import type { AgentSocketServer } from "../presentation/ws/agent";
 import { CommandActions, type AgentCommand } from "#common/types/agent-ws.types";
 import { TooltifyError } from "#common/errors/tooltify.error";
-import { normalizeRelativePath } from "#common/helpers/load-config.helper";
+import { normalizePath } from "#common/utils/normalizedPath"
 
 export class EditorService {
   constructor(
@@ -12,7 +12,7 @@ export class EditorService {
   ) { }
 
   resolvePath(relPath: string): string {
-    const normalized = normalizeRelativePath(relPath);
+    const normalized = normalizePath(relPath);
     const fullPath = path.resolve(this.basePath, normalized);
     /**
      * Se agrega path.sep al final de basePath para una verificación correcta
