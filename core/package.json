@@ -43,7 +43,6 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^4.3.0",
     "autoprefixer": "^10.4.27",
-    "jsonwebtoken": "^9.0.3",
     "monaco-editor": "^0.55.1",
     "postcss": "^8.5.8",
     "react": "^19.2.4",

@@ -21,6 +21,17 @@ const sharedConfig: Partial<Options> = {
   esbuildPlugins: [commonAliasPlugin],
 }
 
+const setPermissionCliBundler = () => {
+  /**
+   * En win32 no es necesario aplicar los permisos.
+   */
+  if (process.platform == "win32") return
+  /**
+   * Se aplica para que #!/usr/bin/env funcione.
+   */
+  return "node -e \"require('fs').chmodSync('dist/cli.js', 0o755)\""
+}
+
 export default defineConfig([
   {
     ...sharedConfig,
@@ -39,6 +50,6 @@ export default defineConfig([
     dts: false,
     clean: false,
     banner: { js: "#!/usr/bin/env node" },
-    onSuccess: "node -e \"require('fs').chmodSync('dist/cli.js', 0o755)\"",
+    onSuccess: setPermissionCliBundler(),
   },
 ])
