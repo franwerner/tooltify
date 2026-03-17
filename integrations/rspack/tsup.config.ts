@@ -5,8 +5,7 @@ export default defineConfig(
   createTsupConfig({
     entry: {
       index: "./index.ts",
-      "helpers/react-transform-source": "../helpers/react-transform-source.ts",
     },
-    external: ["@rspack/core", "@tooltify/core", "react"],
+    external: ["@rspack/core", "@tooltify/core", "@tooltify/integration-shared"],
   }),
 );

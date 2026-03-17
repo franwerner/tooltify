@@ -1,14 +1,9 @@
 import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
 import type { Compiler, RspackPluginInstance } from "@rspack/core";
 import { startServer, CLIENT_BUNDLE } from "@tooltify/core";
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-import { StartOptions } from "../types/StartOptions.interface"
-/**
- * Inyecta el build
- */
-const CUSTOM_JSX_RUNTIME = path.resolve(__dirname, "./helpers/react-transform-source");
+import { StartOptions } from "@tooltify/integration-shared"
+
+const CUSTOM_JSX_RUNTIME = "@tooltify/integration-shared/source-transformers/react";
 
 export function rspackTooltify({ publicUrl }: StartOptions = {}): RspackPluginInstance {
     return {
