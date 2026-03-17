@@ -10,7 +10,7 @@ export const buildTree = (el: Element): SourceNode => {
   }
   return {
     tag: el.tagName.toLowerCase(),
-    source: el.getAttribute("data-source"),
+    source: el.getAttribute("tooltify_source"),
     children,
   };
 };
@@ -21,7 +21,7 @@ export const getParentChain = (el: Element): SourceNode[] => {
   while (current && current !== document.body) {
     chain.push({
       tag: current.tagName.toLowerCase(),
-      source: current.getAttribute("data-source"),
+      source: current.getAttribute("tooltify_source"),
       children: [],
     });
     current = current.parentElement;

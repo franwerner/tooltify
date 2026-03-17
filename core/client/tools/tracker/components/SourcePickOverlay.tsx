@@ -25,7 +25,7 @@ export const SourcePickOverlay: React.FC<Props> = ({ excludeRefs, dropZoneRef, o
 
     // Crosshair cursor
     const style = document.createElement("style");
-    style.setAttribute("data-source-pick", "");
+    style.setAttribute("tooltify_source-pick", "");
     style.textContent = "* { cursor: crosshair !important; }";
     document.head.appendChild(style);
 
@@ -122,7 +122,7 @@ export const SourcePickOverlay: React.FC<Props> = ({ excludeRefs, dropZoneRef, o
       // ── Normal hover ──
       const target = e.target as Element;
       if (isExcluded(target)) { hide(); return; }
-      const found = target.closest("[data-source]");
+      const found = target.closest("[tooltify_source]");
       if (!found || isExcluded(found)) { hide(); return; }
       if (found === lastEl.current) return;
       lastEl.current = found;
@@ -133,7 +133,7 @@ export const SourcePickOverlay: React.FC<Props> = ({ excludeRefs, dropZoneRef, o
       highlight.style.left = `${rect.left}px`;
       highlight.style.width = `${rect.width}px`;
       highlight.style.height = `${rect.height}px`;
-      positionLabel(rect, found.getAttribute("data-source") || "");
+      positionLabel(rect, found.getAttribute("tooltify_source") || "");
     };
 
     // ── Pointer down: start drag ──
@@ -143,9 +143,9 @@ export const SourcePickOverlay: React.FC<Props> = ({ excludeRefs, dropZoneRef, o
       e.stopPropagation();
 
       const target = e.target as Element;
-      const found = target.closest("[data-source]");
+      const found = target.closest("[tooltify_source]");
       if (found) {
-        dragSource = found.getAttribute("data-source");
+        dragSource = found.getAttribute("tooltify_source");
         dragStartX = e.clientX;
         dragStartY = e.clientY;
         isDragging = false;

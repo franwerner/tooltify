@@ -50,8 +50,8 @@ export function useEditorPickMode(
       e.stopPropagation();
       e.stopImmediatePropagation();
 
-      const found = target.closest("[data-source]");
-      if (found) setEditorSource(found.getAttribute("data-source")!);
+      const found = target.closest("[tooltify_source]");
+      if (found) setEditorSource(found.getAttribute("tooltify_source")!);
       setEditorPicking(false);
     };
 

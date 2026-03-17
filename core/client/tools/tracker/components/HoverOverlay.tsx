@@ -37,7 +37,7 @@ export const HoverOverlay: React.FC<Props> = ({ modalRef, fabRef, color = "#58a6
         return;
       }
 
-      const found = target.closest("[data-source]");
+      const found = target.closest("[tooltify_source]");
       if (!found || isOwnUI(found)) {
         hide();
         return;
@@ -53,7 +53,7 @@ export const HoverOverlay: React.FC<Props> = ({ modalRef, fabRef, color = "#58a6
       highlight.style.width = `${rect.width}px`;
       highlight.style.height = `${rect.height}px`;
 
-      const source = found.getAttribute("data-source") || "";
+      const source = found.getAttribute("tooltify_source") || "";
       label.textContent = source;
       label.style.display = "block";
 
