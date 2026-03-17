@@ -67,7 +67,7 @@ class AgentWebsocket {
 
         console.log(`[agent:exec] $ ${command}`)
 
-        exec(command, (err, stdout, stderr) => {
+        exec(command, { windowsHide: true }, (err, stdout, stderr) => {
             if (err) {
                 console.log(`[agent:exec] error — ${stderr || err.message}`)
                 this.send({ error: stderr || err.message })
