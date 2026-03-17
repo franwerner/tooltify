@@ -5,7 +5,7 @@
   "scripts": {
     "build": "npm run build:core && npm run build:integrations",
     "build:core": "npm run build --workspace=core",
-    "build:integrations": "npm run build --workspace=@tooltify/integration-rspack"
+    "build:integrations": "npm run build --workspace=@tooltify/integration-shared && npm run build --workspace=@tooltify/integration-rspack"
   },
   "keywords": [
     "devtools",
