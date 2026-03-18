@@ -1,5 +1,21 @@
 import { forwardRef, memo, useCallback, useRef, useState } from "react";
+import styled from "styled-components";
 import { Button } from "./components/Button";
+
+// --- Styled Components ---
+
+const Card = styled.section``
+
+const StyledInput = styled.input``
+
+const ButtonTest = () => {
+  return <h6>Holadna</h6>
+}
+// styled wrapping a non-forwardRef component (triggers warning)
+function DialogComponent(props: any) {
+  return <ButtonTest {...props}></ButtonTest>
+}
+const StyledDialog = styled(DialogComponent)``
 
 // --- ForwardRef ---
 
@@ -14,7 +30,7 @@ const LabeledInput = forwardRef<HTMLInputElement, InputProps>(
         <label style={{ display: "block", fontSize: "0.8rem", marginBottom: "0.25rem" }}>
           {label}
         </label>
-        <input ref={ref} {...rest} />
+        <StyledInput ref={ref} {...rest} />
       </div>
     )
   }
@@ -57,29 +73,9 @@ export default function App() {
   }, [])
 
   return (
-    <div style={{ padding: "2rem", maxWidth: "480px" }}>
-      <h2>Tooltify Playground</h2>
+    <>
+      <StyledDialog />
+    </>
 
-      <section>
-        <h4>ForwardRef — LabeledInput</h4>
-        <LabeledInput ref={inputRef} label="Username" placeholder="type something..." />
-        <br />
-        <Button label="Focus input" onClick={focusInput} />
-      </section>
-
-      <section>
-        <h4>Memo — CounterDisplay</h4>
-        <CounterDisplay count={count} onIncrement={increment} onDecrement={decrement} />
-      </section>
-
-      <section>
-        <h4>ForwardRef — Button ref</h4>
-        <Button
-          ref={buttonRef}
-          label="Ref Button"
-          onClick={() => console.log("buttonRef", buttonRef.current)}
-        />
-      </section>
-    </div>
   )
 }
