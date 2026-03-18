@@ -1,6 +1,6 @@
 {
   "name": "@tooltify/integration-rspack",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -18,8 +18,8 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@tooltify/core": "*",
-    "@tooltify/integration-shared": "*"
+    "@tooltify/core": "latest",
+    "@tooltify/integration-shared": "latest"
   },
   "peerDependencies": {
     "@rspack/core": "^1.7.8"
