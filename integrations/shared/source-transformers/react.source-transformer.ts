@@ -1,6 +1,5 @@
 import { jsx as _jsx, jsxs as _jsxs, Fragment } from "react/jsx-runtime";
-import { SOURCE_PROPERTY_NAME } from "@tooltify/core"
-
+import { SOURCE_PROPERTY_NAME } from "../constants/sourceProperyName.constant"
 const SymbolForwardRef = Symbol.for("react.forward_ref")
 
 const isForwardRef = (type: any): boolean =>

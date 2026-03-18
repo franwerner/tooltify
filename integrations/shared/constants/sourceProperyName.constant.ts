@@ -1,0 +1,1 @@
+export const SOURCE_PROPERTY_NAME = "tooltify_source"
