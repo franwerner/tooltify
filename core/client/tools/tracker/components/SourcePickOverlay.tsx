@@ -1,4 +1,5 @@
 import { useEffect, useRef, useCallback } from "react";
+import { SOURCE_PROPERTY_NAME } from "#common/constant/sourceProperyName.constant"
 const CO = "#da7756";
 
 interface Props {
@@ -25,7 +26,7 @@ export const SourcePickOverlay: React.FC<Props> = ({ excludeRefs, dropZoneRef, o
 
     // Crosshair cursor
     const style = document.createElement("style");
-    style.setAttribute("tooltify_source-pick", "");
+    style.setAttribute(`${SOURCE_PROPERTY_NAME}-pick`, "");
     style.textContent = "* { cursor: crosshair !important; }";
     document.head.appendChild(style);
 
@@ -122,7 +123,7 @@ export const SourcePickOverlay: React.FC<Props> = ({ excludeRefs, dropZoneRef, o
       // ── Normal hover ──
       const target = e.target as Element;
       if (isExcluded(target)) { hide(); return; }
-      const found = target.closest("[tooltify_source]");
+      const found = target.closest(`[${SOURCE_PROPERTY_NAME}]`);
       if (!found || isExcluded(found)) { hide(); return; }
       if (found === lastEl.current) return;
       lastEl.current = found;
@@ -133,7 +134,7 @@ export const SourcePickOverlay: React.FC<Props> = ({ excludeRefs, dropZoneRef, o
       highlight.style.left = `${rect.left}px`;
       highlight.style.width = `${rect.width}px`;
       highlight.style.height = `${rect.height}px`;
-      positionLabel(rect, found.getAttribute("tooltify_source") || "");
+      positionLabel(rect, found.getAttribute(SOURCE_PROPERTY_NAME) || "");
     };
 
     // ── Pointer down: start drag ──
@@ -143,9 +144,9 @@ export const SourcePickOverlay: React.FC<Props> = ({ excludeRefs, dropZoneRef, o
       e.stopPropagation();
 
       const target = e.target as Element;
-      const found = target.closest("[tooltify_source]");
+      const found = target.closest(`[${SOURCE_PROPERTY_NAME}]`);
       if (found) {
-        dragSource = found.getAttribute("tooltify_source");
+        dragSource = found.getAttribute(SOURCE_PROPERTY_NAME);
         dragStartX = e.clientX;
         dragStartY = e.clientY;
         isDragging = false;

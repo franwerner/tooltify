@@ -1,5 +1,5 @@
 import { useEffect, useRef, useCallback } from "react";
-
+import { SOURCE_PROPERTY_NAME } from "#common/constant/sourceProperyName.constant"
 interface Props {
   modalRef: React.RefObject<HTMLElement | null>;
   fabRef: React.RefObject<HTMLElement | null>;
@@ -37,7 +37,7 @@ export const HoverOverlay: React.FC<Props> = ({ modalRef, fabRef, color = "#58a6
         return;
       }
 
-      const found = target.closest("[tooltify_source]");
+      const found = target.closest(`[${SOURCE_PROPERTY_NAME}]`);
       if (!found || isOwnUI(found)) {
         hide();
         return;
@@ -53,7 +53,7 @@ export const HoverOverlay: React.FC<Props> = ({ modalRef, fabRef, color = "#58a6
       highlight.style.width = `${rect.width}px`;
       highlight.style.height = `${rect.height}px`;
 
-      const source = found.getAttribute("tooltify_source") || "";
+      const source = found.getAttribute(SOURCE_PROPERTY_NAME) || "";
       label.textContent = source;
       label.style.display = "block";
 

@@ -1,4 +1,5 @@
 import type { SourceNode, FlatNode } from "./types";
+import { SOURCE_PROPERTY_NAME } from "#common/constant/sourceProperyName.constant"
 
 export const buildTree = (el: Element): SourceNode => {
   const children: SourceNode[] = [];
@@ -10,7 +11,7 @@ export const buildTree = (el: Element): SourceNode => {
   }
   return {
     tag: el.tagName.toLowerCase(),
-    source: el.getAttribute("tooltify_source"),
+    source: el.getAttribute(SOURCE_PROPERTY_NAME),
     children,
   };
 };
@@ -21,7 +22,7 @@ export const getParentChain = (el: Element): SourceNode[] => {
   while (current && current !== document.body) {
     chain.push({
       tag: current.tagName.toLowerCase(),
-      source: current.getAttribute("tooltify_source"),
+      source: current.getAttribute(SOURCE_PROPERTY_NAME),
       children: [],
     });
     current = current.parentElement;

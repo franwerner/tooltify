@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { SOURCE_PROPERTY_NAME } from "#common/constant/sourceProperyName.constant"
 import type { useActiveTool } from "../../../shared/components/ActiveToolContext";
 
 const isOwnUI = (t: Node) =>
@@ -50,8 +51,8 @@ export function useEditorPickMode(
       e.stopPropagation();
       e.stopImmediatePropagation();
 
-      const found = target.closest("[tooltify_source]");
-      if (found) setEditorSource(found.getAttribute("tooltify_source")!);
+      const found = target.closest(`[${SOURCE_PROPERTY_NAME}]`);
+      if (found) setEditorSource(found.getAttribute(SOURCE_PROPERTY_NAME)!);
       setEditorPicking(false);
     };
 
