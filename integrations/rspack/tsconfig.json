@@ -6,11 +6,6 @@
       "DOM"
     ],
     "outDir": "dist",
-    "paths": {
-      "@tooltify/core": [
-        "../../core/index.ts"
-      ]
-    }
   },
   "include": [
     "index.ts"

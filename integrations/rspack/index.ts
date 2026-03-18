@@ -1,9 +1,11 @@
 import fs from "fs";
+import { createRequire } from "module";
 import type { Compiler, RspackPluginInstance } from "@rspack/core";
 import { startServer, CLIENT_BUNDLE } from "@tooltify/core";
 import { StartOptions } from "@tooltify/integration-shared"
 
-const CUSTOM_JSX_RUNTIME = "@tooltify/integration-shared/source-transformers/react";
+const _require = createRequire(import.meta.url);
+const CUSTOM_JSX_RUNTIME = _require.resolve("@tooltify/integration-shared/source-transformers/react");
 
 export function rspackTooltify({ publicUrl }: StartOptions = {}): RspackPluginInstance {
     return {
