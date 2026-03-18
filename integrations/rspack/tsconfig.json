@@ -6,6 +6,10 @@
       "DOM"
     ],
     "outDir": "dist",
+    "paths": {
+      "@tooltify/integration-shared": ["../shared/index.ts"],
+      "@tooltify/integration-shared/*": ["../shared/*"]
+    }
   },
   "include": [
     "index.ts"

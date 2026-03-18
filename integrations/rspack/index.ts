@@ -1,27 +1,22 @@
 import fs from "fs";
-import { createRequire } from "module";
 import type { Compiler, RspackPluginInstance } from "@rspack/core";
 import { startServer, CLIENT_BUNDLE } from "@tooltify/core";
-import { StartOptions } from "@tooltify/integration-shared"
+import { createReactJsxRuntimeFile } from "@tooltify/integration-shared";
+import type { RspackStartOptions } from "./types";
 
-const _require = createRequire(import.meta.url);
-const CUSTOM_JSX_RUNTIME = _require.resolve("@tooltify/integration-shared/source-transformers/react");
-
-export function rspackTooltify({ publicUrl }: StartOptions = {}): RspackPluginInstance {
+export function rspackTooltify({ publicUrl, react }: RspackStartOptions = {}): RspackPluginInstance {
     return {
         apply(compiler: Compiler) {
             const { config, port, buildTracker, cleanDeps } = startServer();
 
             const TOOLTIFY_URL = publicUrl ? publicUrl : `http://localhost:${port}`
 
+            const content = createReactJsxRuntimeFile(config.packagesDir, react?.shouldInjectSource)
+
             new compiler.rspack.NormalModuleReplacementPlugin(
                 /^react\/jsx-dev-runtime$/,
-                CUSTOM_JSX_RUNTIME,
+                `data:text/javascript,${encodeURIComponent(content)}`,
             ).apply(compiler);
-
-            new compiler.rspack.DefinePlugin({
-                __TOOLTIFY_PACKAGES_DIR__: JSON.stringify(config.packagesDir),
-            }).apply(compiler);
 
             compiler.hooks.compilation.tap("tooltify", (compilation) => {
                 compilation.hooks.processAssets.tap(
