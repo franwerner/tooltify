@@ -21,8 +21,7 @@
     "prepublishOnly": "npm run build"
   },
   "peerDependencies": {
-    "react": "*",
-    "@tooltify/core": "*"
+    "react": "*"
   },
   "files": [
     "dist"
