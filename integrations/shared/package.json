@@ -1,6 +1,6 @@
 {
   "name": "@tooltify/integration-shared",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "type": "module",
   "types": "./dist/index.d.ts",
   "main": "./dist/index.js",
@@ -12,8 +12,8 @@
     "./source-transformers/react": {
       "types": "./dist/source-transformers/react.d.ts",
       "import": "./dist/source-transformers/react.js",
-      "default": "./dist/source-transformers/react.js",
-      "require": "./dist/source-transformers/react.js"
+      "require": "./dist/source-transformers/react.js",
+      "default": "./dist/source-transformers/react.js"
     }
   },
   "scripts": {
