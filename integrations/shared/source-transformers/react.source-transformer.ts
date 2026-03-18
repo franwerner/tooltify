@@ -3,16 +3,16 @@ import { SOURCE_PROPERTY_NAME } from "../constants/sourceProperyName.constant"
 
 export interface JsxRuntimeOptions {
   packagesDir: string
-  shouldInjectSource?: (type: any, props: any) => boolean
+  shouldInjectSource?: (type: any) => boolean
 }
 
 /**
  * Esto reescribe la libreria de JSXRuntime agregando un wrapper para poder inyectar el data-source.
  */
 export function createJsxRuntime({ packagesDir, shouldInjectSource }: JsxRuntimeOptions) {
-  const shouldInject = (type: any, props: any): boolean => {
+  const shouldInject = (type: any): boolean => {
     if (typeof type === "string") return true
-    return shouldInjectSource?.(type, props) ?? false
+    return shouldInjectSource?.(type) ?? false
   }
 
   function jsxDEV(
@@ -22,7 +22,7 @@ export function createJsxRuntime({ packagesDir, shouldInjectSource }: JsxRuntime
     isStaticChildren: boolean,
     source?: { fileName?: string; lineNumber?: number; columnNumber?: number },
   ) {
-    if (shouldInject(type, props) && source?.fileName) {
+    if (shouldInject(type) && source?.fileName) {
       const idx = source.fileName.indexOf(packagesDir)
       if (idx >= 0) {
         const relative = source.fileName.slice(idx + packagesDir.length)

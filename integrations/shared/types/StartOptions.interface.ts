@@ -1,5 +1,5 @@
 export interface ReactOptions {
-  shouldInjectSource?: (type: any, props: any) => boolean
+  shouldInjectSource?: (type: any) => boolean
 }
 
 export interface BaseStartOptions {

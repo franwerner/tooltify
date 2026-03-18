@@ -7,10 +7,9 @@ const _require = createRequire(import.meta.url)
  * en cambio este lo hace en el proceso de buildeo, por lo tanto es en node.
  */
 const REACT_TRANSFORMER_PATH = _require.resolve("@tooltify/integration-shared/source-transformers/react")
-console.log(REACT_TRANSFORMER_PATH)
 export function createReactJsxRuntimeFile(
   packagesDir: string,
-  shouldInjectSource?: (type: any, props: any) => boolean,
+  shouldInjectSource?: (type: any) => boolean,
 ): string {
   const shouldInjectSourceCode = shouldInjectSource ? shouldInjectSource.toString() : "undefined"
   const isShortMethodDefinition = shouldInjectSourceCode.startsWith("shouldInjectSource")
