@@ -23,6 +23,11 @@
   "peerDependencies": {
     "react": "*"
   },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
   "files": [
     "dist"
   ],

@@ -43,7 +43,8 @@ export default {
   plugins: [
     new HtmlRspackPlugin({ template: "./index.html" }),
     rspackTooltify({
-      react: {
+      runtime: {
+        type: "react",
         shouldInjectSource: (type) => {
           return typeof type === "object" && typeof type?.target === "string"
         },

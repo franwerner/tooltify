@@ -4,14 +4,15 @@ import { startServer, CLIENT_BUNDLE } from "@tooltify/core";
 import { createReactJsxRuntimeFile } from "@tooltify/integration-shared";
 import type { RspackStartOptions } from "./types";
 
-export function rspackTooltify({ publicUrl, react }: RspackStartOptions = {}): RspackPluginInstance {
+export function rspackTooltify({ publicUrl, runtime }: RspackStartOptions = {}): RspackPluginInstance {
     return {
         apply(compiler: Compiler) {
             const { config, port, buildTracker, cleanDeps } = startServer();
 
             const TOOLTIFY_URL = publicUrl ? publicUrl : `http://localhost:${port}`
 
-            const content = createReactJsxRuntimeFile(config.packagesDir, react?.shouldInjectSource)
+            const reactOptions = runtime?.type === "react" ? runtime : undefined
+            const content = createReactJsxRuntimeFile(config.packagesDir, reactOptions?.shouldInjectSource)
 
             new compiler.rspack.NormalModuleReplacementPlugin(
                 /^react\/jsx-dev-runtime$/,
