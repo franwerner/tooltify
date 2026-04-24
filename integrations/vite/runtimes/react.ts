@@ -1,7 +1,7 @@
 import { createRequire } from "node:module";
 import type { Plugin } from "vite";
 import { createReactJsxRuntimeFile } from "@tooltify/integration-shared";
-import type { ReactRuntimeOptions } from "@tooltify/integration-shared";
+import type { ViteReactRuntimeOptions } from "../types";
 
 const _require = createRequire(import.meta.url);
 
@@ -14,7 +14,7 @@ export interface RuntimeContext {
 }
 
 export function createReactRuntime(
-    options: ReactRuntimeOptions,
+    options: ViteReactRuntimeOptions,
     ctx: RuntimeContext,
 ): Plugin[] {
     let reactPluginFactory: any;
@@ -53,5 +53,5 @@ export function createReactRuntime(
         },
     };
 
-    return [reactPluginFactory(), virtualModulePlugin];
+    return [reactPluginFactory(options.reactOptions), virtualModulePlugin];
 }

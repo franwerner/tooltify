@@ -1,13 +1,13 @@
 import { createRequire } from "node:module";
 import type { Plugin } from "vite";
 import { createVueSourceTransform } from "@tooltify/integration-shared/source-transformers/vue";
-import type { VueRuntimeOptions } from "@tooltify/integration-shared";
+import type { ViteVueRuntimeOptions } from "../types";
 import type { RuntimeContext } from "./react";
 
 const _require = createRequire(import.meta.url);
 
 export function createVueRuntime(
-    options: VueRuntimeOptions,
+    options: ViteVueRuntimeOptions,
     ctx: RuntimeContext,
 ): Plugin[] {
     let vuePluginFactory: any;
@@ -24,11 +24,19 @@ export function createVueRuntime(
         shouldInjectSource: options.shouldInjectSource,
     });
 
+    const userVueOptions = options.vueOptions ?? {};
+    const userTemplate = userVueOptions.template ?? {};
+    const userCompilerOptions = userTemplate.compilerOptions ?? {};
+    const userNodeTransforms = userCompilerOptions.nodeTransforms ?? [];
+
     return [
         vuePluginFactory({
+            ...userVueOptions,
             template: {
+                ...userTemplate,
                 compilerOptions: {
-                    nodeTransforms: [sourceTransform],
+                    ...userCompilerOptions,
+                    nodeTransforms: [sourceTransform, ...userNodeTransforms],
                 },
             },
         }),

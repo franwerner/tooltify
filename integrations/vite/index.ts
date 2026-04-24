@@ -2,8 +2,7 @@ import fs from "node:fs";
 import type { Plugin } from "vite";
 import { startServer, CLIENT_BUNDLE } from "@tooltify/core";
 import { Runtime } from "@tooltify/integration-shared";
-import type { RuntimeOptions } from "@tooltify/integration-shared";
-import type { ViteStartOptions } from "./types";
+import type { ViteRuntimeOptions, ViteStartOptions } from "./types";
 import { createReactRuntime } from "./runtimes/react";
 import { createVueRuntime } from "./runtimes/vue";
 
@@ -83,7 +82,7 @@ export function viteTooltify({ publicUrl, runtime }: ViteStartOptions = {}): Plu
 }
 
 function resolveRuntime(
-    runtime: RuntimeOptions,
+    runtime: ViteRuntimeOptions,
     ctx: { packagesDir: string },
 ): Plugin[] {
     switch (runtime.type) {
@@ -91,5 +90,11 @@ function resolveRuntime(
             return createReactRuntime(runtime, ctx);
         case Runtime.VUE:
             return createVueRuntime(runtime, ctx);
+        default: {
+            const unknownType = (runtime as { type?: unknown }).type;
+            throw new Error(
+                `@tooltify/integration-vite: unknown runtime type "${String(unknownType)}". Expected "react" or "vue".`,
+            );
+        }
     }
 }
