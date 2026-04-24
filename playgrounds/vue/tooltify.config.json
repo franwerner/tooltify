@@ -1,0 +1,8 @@
+{
+  "packagesDir": "./src",
+  "port": 4101,
+  "auth": {
+    "secret": "dev-secret-key",
+    "salt": "dev-salt-key"
+  }
+}

@@ -1,9 +1,9 @@
 {
-  "name": "@tooltify/playground",
+  "name": "@tooltify/playground-react",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev:rspack": "tsx ../node_modules/@rspack/cli/bin/rspack.js serve -c rspack.config.ts",
+    "dev:rspack": "tsx ../../node_modules/@rspack/cli/bin/rspack.js serve -c rspack.config.ts",
     "dev:webpack": "webpack serve -c webpack.config.ts",
     "dev:vite": "vite",
     "tooltify": "tooltify"
@@ -18,6 +18,9 @@
     "@rspack/core": "^1.7.8",
     "@tooltify/core": "*",
     "@tooltify/integration-rspack": "*",
-    "tsx": "^4.21.0"
+    "@tooltify/integration-vite": "*",
+    "@vitejs/plugin-react": "^4.3.0",
+    "tsx": "^4.21.0",
+    "vite": "^6.2.0"
   }
 }

@@ -1,5 +1,6 @@
 import { HtmlRspackPlugin } from "@rspack/core";
 import { rspackTooltify } from "@tooltify/integration-rspack";
+import { Runtime } from "@tooltify/integration-shared";
 import { createRequire } from "module";
 
 const require = createRequire(import.meta.url);
@@ -44,8 +45,8 @@ export default {
     new HtmlRspackPlugin({ template: "./index.html" }),
     rspackTooltify({
       runtime: {
-        type: "react",
-        shouldInjectSource: (type) => {
+        type: Runtime.REACT,
+        shouldInjectSource: (type: any) => {
           return typeof type === "object" && typeof type?.target === "string"
         },
       }
