@@ -1,6 +1,6 @@
 {
   "name": "@tooltify/integration-vite",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -22,17 +22,7 @@
     "@tooltify/integration-shared": "latest"
   },
   "peerDependencies": {
-    "vite": "^6.0.0",
-    "@vitejs/plugin-react": "^4.3.0",
-    "@vitejs/plugin-vue": "^5.1.0"
-  },
-  "peerDependenciesMeta": {
-    "@vitejs/plugin-react": {
-      "optional": true
-    },
-    "@vitejs/plugin-vue": {
-      "optional": true
-    }
+    "vite": "^5.0.0 || ^6.0.0"
   },
   "devDependencies": {
     "@tooltify/core": "*",
