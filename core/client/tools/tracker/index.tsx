@@ -9,6 +9,7 @@ import { HoverOverlay } from "./components/HoverOverlay";
 import { MiniEditor } from "../editor";
 import { EditorFab } from "../editor/components/EditorFab";
 import { openSource } from "../../shared/utils/openSource";
+import { loadServerMeta } from "../../shared/utils/serverMeta";
 import { useActiveTool } from "../../shared/components/ActiveToolContext";
 
 export const SourceTracker: React.FC = () => {
@@ -27,6 +28,11 @@ export const SourceTracker: React.FC = () => {
     toggleEditorPick,
     deactivateEditorPick,
   } = useEditorPickMode(tool, setActive, active);
+
+  // Prefetch server meta (root path) so copy actions are instant
+  useEffect(() => {
+    loadServerMeta();
+  }, []);
 
   // Reset picking on tool change
   useEffect(() => {

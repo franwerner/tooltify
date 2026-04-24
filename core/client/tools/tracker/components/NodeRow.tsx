@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import type { SourceNode } from "../types";
+import { buildFullPath } from "../../../shared/utils/serverMeta";
 
 interface Props {
   node: SourceNode;
@@ -13,6 +14,8 @@ interface Props {
 export const NodeRow: React.FC<Props> = ({ node, depth, onOpen, onEdit, dimmed, highlight }) => {
   const [hovered, setHovered] = useState(false);
   const [ctrlHeld, setCtrlHeld] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const copyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const clickable = !!node.source;
 
   useEffect(() => {
@@ -28,6 +31,19 @@ export const NodeRow: React.FC<Props> = ({ node, depth, onOpen, onEdit, dimmed, 
       window.removeEventListener("blur", blur);
     };
   }, []);
+
+  useEffect(() => () => {
+    if (copyTimer.current) clearTimeout(copyTimer.current);
+  }, []);
+
+  const handleCopy = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!node.source) return;
+    navigator.clipboard.writeText(buildFullPath(node.source));
+    setCopied(true);
+    if (copyTimer.current) clearTimeout(copyTimer.current);
+    copyTimer.current = setTimeout(() => setCopied(false), 1000);
+  };
 
   return (
     <div
@@ -55,6 +71,24 @@ export const NodeRow: React.FC<Props> = ({ node, depth, onOpen, onEdit, dimmed, 
           >
             {node.source}
           </span>
+          {hovered && (
+            <button
+              className="tfy-bg-transparent tfy-rounded tfy-w-[18px] tfy-h-[18px] tfy-cursor-pointer tfy-text-xs tfy-p-0 tfy-ml-1 tfy-shrink-0 tfy-inline-flex tfy-items-center tfy-justify-center tfy-border tfy-border-[#58a6ff60] tfy-text-accent"
+              onClick={handleCopy}
+              title={copied ? "Copied!" : "Copy path"}
+            >
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                {copied ? (
+                  <polyline points="20 6 9 17 4 12" />
+                ) : (
+                  <>
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                  </>
+                )}
+              </svg>
+            </button>
+          )}
           {hovered && onEdit && (
             <button
               className="tfy-bg-transparent tfy-rounded tfy-w-[18px] tfy-h-[18px] tfy-cursor-pointer tfy-text-xs tfy-p-0 tfy-ml-1 tfy-shrink-0 tfy-inline-flex tfy-items-center tfy-justify-center tfy-border tfy-border-[#3fb95060] tfy-text-green"

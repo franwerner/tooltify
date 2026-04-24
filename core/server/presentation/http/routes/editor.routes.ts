@@ -28,5 +28,9 @@ export const createEditorRoutes = (editor: EditorService, userTracker: UserTrack
     res.json({ message: "Editor opened", data: editor.openSource(source, req.sessionUser!) });
   });
 
+  router.get("/meta", (_req, res) => {
+    res.json({ message: "Editor meta", data: { root: editor.getRoot() } });
+  });
+
   return router;
 };

@@ -11,6 +11,10 @@ export class EditorService {
     private agentWs: AgentSocketServer,
   ) { }
 
+  getRoot(): string {
+    return this.basePath.replace(/\\/g, "/");
+  }
+
   resolvePath(relPath: string): string {
     const normalized = normalizePath(relPath);
     const fullPath = path.resolve(this.basePath, normalized);
