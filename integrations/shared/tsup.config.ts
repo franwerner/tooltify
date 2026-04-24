@@ -6,7 +6,8 @@ export default defineConfig(
     entry: {
       index: "./index.ts",
       "source-transformers/react": "./source-transformers/react.source-transformer.ts",
+      "source-transformers/vue": "./source-transformers/vue.source-transformer.ts",
     },
-    external: ["react"],
+    external: ["react", "@vue/compiler-core"],
   }),
 );

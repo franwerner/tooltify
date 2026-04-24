@@ -1,6 +1,7 @@
 
 export enum Runtime {
-  REACT = "react"
+  REACT = "react",
+  VUE = "vue"
 }
 
 export interface ReactRuntimeOptions {
@@ -8,7 +9,12 @@ export interface ReactRuntimeOptions {
   shouldInjectSource?: (type: any) => boolean
 }
 
-export type RuntimeOptions = ReactRuntimeOptions
+export interface VueRuntimeOptions {
+  type: Runtime.VUE
+  shouldInjectSource?: (tag: string, isComponent: boolean) => boolean
+}
+
+export type RuntimeOptions = ReactRuntimeOptions | VueRuntimeOptions
 
 export interface BaseStartOptions {
   publicUrl?: string
