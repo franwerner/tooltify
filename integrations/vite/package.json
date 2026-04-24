@@ -1,0 +1,60 @@
+{
+  "name": "@tooltify/integration-vite",
+  "version": "0.2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build:lib": "tsup",
+    "build": "npm run build:lib",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@tooltify/core": "latest",
+    "@tooltify/integration-shared": "latest"
+  },
+  "peerDependencies": {
+    "vite": "^6.0.0",
+    "@vitejs/plugin-react": "^4.3.0",
+    "@vitejs/plugin-vue": "^5.1.0"
+  },
+  "peerDependenciesMeta": {
+    "@vitejs/plugin-react": {
+      "optional": true
+    },
+    "@vitejs/plugin-vue": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@tooltify/core": "*",
+    "@tooltify/integration-shared": "*",
+    "@vitejs/plugin-react": "^4.3.0",
+    "@vitejs/plugin-vue": "^5.1.0",
+    "vite": "^6.2.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "devtools",
+    "vite",
+    "tooltify",
+    "integration"
+  ],
+  "author": "Franco Werner",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/franwerner/tooltify.git",
+    "directory": "integrations/vite"
+  }
+}
