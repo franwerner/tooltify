@@ -5,11 +5,7 @@
       "ES2022",
       "DOM"
     ],
-    "outDir": "dist",
-    "paths": {
-      "@tooltify/integration-shared": ["../shared/index.ts"],
-      "@tooltify/integration-shared/*": ["../shared/*"]
-    }
+    "outDir": "dist"
   },
   "include": [
     "index.ts"
