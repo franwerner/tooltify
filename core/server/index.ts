@@ -1,6 +1,4 @@
 import http from "http";
-import path from "path";
-import { fileURLToPath } from "url";
 import express from "express";
 import cors from "cors";
 import { createRouter } from "./presentation/http/routes";
@@ -12,10 +10,23 @@ import { EditorService } from "./services/editor.service";
 import { UserTrackerService } from "./services/user-tracker.service";
 import { BuildTrackerService } from "./services/build-tracker.service";
 
+interface ServerInstance {
+  config: ReturnType<typeof loadConfig>;
+  port: number;
+  buildTracker: BuildTrackerService;
+  agentWs: ReturnType<typeof initSocket>["agentWs"];
+}
 
-export function startServer() {
+let cachedInstance: ServerInstance | null = null;
+let httpServerRef: http.Server | null = null;
+let userTrackerRef: UserTrackerService | null = null;
+let processCleanupAttached = false;
+
+export function startServer(): ServerInstance {
+  if (cachedInstance) return cachedInstance;
+
   const config = loadConfig();
-  const port = config.port
+  const port = config.port;
 
   const vault = new VaultService(config.auth.secret);
   const auth = new AuthService(config.auth, vault);
@@ -35,16 +46,37 @@ export function startServer() {
 
   server.listen(port, () => {
     console.log(`[tooltify] server running on http://localhost:${port}`);
-    console.log(config)
+    console.log(config);
   });
 
-  return {
+  httpServerRef = server;
+  userTrackerRef = userTracker;
+
+  cachedInstance = {
     config,
     port,
     buildTracker,
     agentWs,
-    cleanDeps() {
-      userTracker.shutdown();
-    },
   };
+
+  if (!processCleanupAttached) {
+    attachProcessCleanup();
+    processCleanupAttached = true;
+  }
+
+  return cachedInstance;
+}
+
+function attachProcessCleanup() {
+  const cleanup = () => {
+    try { userTrackerRef?.shutdown(); } catch { }
+    try { httpServerRef?.close(); } catch { }
+    cachedInstance = null;
+    httpServerRef = null;
+    userTrackerRef = null;
+  };
+
+  process.once("beforeExit", cleanup);
+  process.once("SIGINT", () => { cleanup(); process.exit(130); });
+  process.once("SIGTERM", () => { cleanup(); process.exit(143); });
 }
