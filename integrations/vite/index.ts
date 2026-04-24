@@ -7,7 +7,7 @@ import { createReactRuntime } from "./runtimes/react";
 import { createVueRuntime } from "./runtimes/vue";
 
 export function viteTooltify({ publicUrl, runtime }: ViteStartOptions = {}): Plugin[] {
-    const { config, port, buildTracker, cleanDeps } = startServer();
+    const { config, port, buildTracker } = startServer();
 
     const TOOLTIFY_URL = publicUrl ? publicUrl : `http://localhost:${port}`;
 
@@ -31,8 +31,6 @@ export function viteTooltify({ publicUrl, runtime }: ViteStartOptions = {}): Plu
                     next(err);
                 }
             });
-
-            server.httpServer?.once("close", () => cleanDeps());
         },
 
         transformIndexHtml: {
@@ -67,10 +65,6 @@ export function viteTooltify({ publicUrl, runtime }: ViteStartOptions = {}): Plu
             if (!isBuild) return;
             const hash = Date.now().toString(36);
             buildTracker.onBuildDone(hash, !!err, err ? [err.message] : []);
-        },
-
-        closeBundle() {
-            if (isBuild) cleanDeps();
         },
     };
 

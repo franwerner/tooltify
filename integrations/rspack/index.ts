@@ -7,7 +7,7 @@ import type { RspackStartOptions } from "./types";
 export function rspackTooltify({ publicUrl, runtime }: RspackStartOptions = {}): RspackPluginInstance {
     return {
         apply(compiler: Compiler) {
-            const { config, port, buildTracker, cleanDeps } = startServer();
+            const { config, port, buildTracker } = startServer();
 
             const TOOLTIFY_URL = publicUrl ? publicUrl : `http://localhost:${port}`
 
@@ -46,8 +46,6 @@ export function rspackTooltify({ publicUrl, runtime }: RspackStartOptions = {}):
                     },
                 );
             });
-
-            compiler.hooks.shutdown.tap("tooltify", () => cleanDeps());
 
             compiler.hooks.watchRun.tap("tooltify", (comp) => {
                 const changed: string[] = comp.modifiedFiles ? [...comp.modifiedFiles] : [];
