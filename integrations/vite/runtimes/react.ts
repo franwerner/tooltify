@@ -22,7 +22,7 @@ export function createReactRuntime(
         );
     }
 
-    if (!ctx.enabled) return reactPluginFactory(options.reactOptions)
+    if (!ctx.enabled) return [reactPluginFactory(options.reactOptions)]
 
     const jsxRuntimeContent = createReactJsxRuntimeFile(
         ctx.packagesDir,

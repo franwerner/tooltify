@@ -8,7 +8,7 @@ import { createVueRuntime } from "./runtimes/vue";
 
 export function viteTooltify({ publicUrl, runtime, enabled }: ViteStartOptions): Plugin[] {
 
-    if (!enabled) return resolveRuntime(runtime, { packagesDir: "_not", enabled: false })
+    if (!enabled) return resolveRuntime(runtime, { packagesDir: "", enabled: false })
 
     const { config, port, buildTracker } = startServer();
 

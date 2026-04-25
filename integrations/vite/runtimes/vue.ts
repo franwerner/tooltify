@@ -18,7 +18,7 @@ export function createVueRuntime(
         );
     }
 
-    if (!ctx.enabled) return vuePluginFactory(options.vueOptions)
+    if (!ctx.enabled) return [vuePluginFactory(options.vueOptions)]
 
     const sourceTransform = createVueSourceTransform({
         packagesDir: ctx.packagesDir,
