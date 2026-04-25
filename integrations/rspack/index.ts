@@ -4,7 +4,10 @@ import { startServer, CLIENT_BUNDLE } from "@tooltify/core";
 import { createReactJsxRuntimeFile } from "@tooltify/integration-shared";
 import type { RspackStartOptions } from "./types";
 
-export function rspackTooltify({ publicUrl, runtime }: RspackStartOptions = {}): RspackPluginInstance {
+export function rspackTooltify({ publicUrl, runtime, enabled }: RspackStartOptions): RspackPluginInstance {
+    if (!enabled) return {
+        apply() { }
+    }
     return {
         apply(compiler: Compiler) {
             const { config, port, buildTracker } = startServer();

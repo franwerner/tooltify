@@ -2,11 +2,14 @@ import fs from "node:fs";
 import type { Plugin } from "vite";
 import { startServer, CLIENT_BUNDLE } from "@tooltify/core";
 import { Runtime } from "@tooltify/integration-shared";
-import type { ViteRuntimeOptions, ViteStartOptions } from "./types";
+import type { RuntimeContext, ViteRuntimeOptions, ViteStartOptions } from "./types";
 import { createReactRuntime } from "./runtimes/react";
 import { createVueRuntime } from "./runtimes/vue";
 
-export function viteTooltify({ publicUrl, runtime }: ViteStartOptions = {}): Plugin[] {
+export function viteTooltify({ publicUrl, runtime, enabled }: ViteStartOptions): Plugin[] {
+
+    if (!enabled) return resolveRuntime(runtime, { packagesDir: "_not", enabled: false })
+
     const { config, port, buildTracker } = startServer();
 
     const TOOLTIFY_URL = publicUrl ? publicUrl : `http://localhost:${port}`;
@@ -68,16 +71,14 @@ export function viteTooltify({ publicUrl, runtime }: ViteStartOptions = {}): Plu
         },
     };
 
-    const runtimePlugins = runtime
-        ? resolveRuntime(runtime, { packagesDir: config.packagesDir })
-        : [];
+    const runtimePlugins = resolveRuntime(runtime, { packagesDir: config.packagesDir, enabled: true })
 
     return [...runtimePlugins, corePlugin];
 }
 
 function resolveRuntime(
     runtime: ViteRuntimeOptions,
-    ctx: { packagesDir: string },
+    ctx: RuntimeContext,
 ): Plugin[] {
     switch (runtime.type) {
         case Runtime.REACT:
@@ -85,9 +86,8 @@ function resolveRuntime(
         case Runtime.VUE:
             return createVueRuntime(runtime, ctx);
         default: {
-            const unknownType = (runtime as { type?: unknown }).type;
             throw new Error(
-                `@tooltify/integration-vite: unknown runtime type "${String(unknownType)}". Expected "react" or "vue".`,
+                `@tooltify/integration-vite: unknown runtime type". Expected "react" or "vue".`,
             );
         }
     }

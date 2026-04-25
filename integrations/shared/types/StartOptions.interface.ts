@@ -18,5 +18,6 @@ export type RuntimeOptions = ReactRuntimeOptions | VueRuntimeOptions
 
 export interface BaseStartOptions {
   publicUrl?: string
-  runtime?: RuntimeOptions
+  enabled: boolean
+  runtime: RuntimeOptions
 }

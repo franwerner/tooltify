@@ -14,8 +14,13 @@ export interface ViteVueRuntimeOptions extends VueRuntimeOptions {
     vueOptions?: VuePluginOptions
 }
 
+export interface RuntimeContext {
+    packagesDir: string;
+    enabled?: boolean
+}
+
 export type ViteRuntimeOptions = ViteReactRuntimeOptions | ViteVueRuntimeOptions
 
 export interface ViteStartOptions extends Omit<BaseStartOptions, "runtime"> {
-    runtime?: ViteRuntimeOptions
+    runtime: ViteRuntimeOptions
 }

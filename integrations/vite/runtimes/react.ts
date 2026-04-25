@@ -1,17 +1,13 @@
 import { createRequire } from "node:module";
 import type { Plugin } from "vite";
 import { createReactJsxRuntimeFile } from "@tooltify/integration-shared";
-import type { ViteReactRuntimeOptions } from "../types";
+import type { RuntimeContext, ViteReactRuntimeOptions } from "../types";
 
 const _require = createRequire(import.meta.url);
 
 const REACT_JSX_DEV_RUNTIME = "react/jsx-dev-runtime";
 const VIRTUAL_REACT_JSX_RUNTIME = "virtual:tooltify-react-jsx-runtime";
 const RESOLVED_VIRTUAL_REACT_JSX_RUNTIME = "\0" + VIRTUAL_REACT_JSX_RUNTIME;
-
-export interface RuntimeContext {
-    packagesDir: string;
-}
 
 export function createReactRuntime(
     options: ViteReactRuntimeOptions,
@@ -25,6 +21,8 @@ export function createReactRuntime(
             "@tooltify/integration-vite: missing peer dependency '@vitejs/plugin-react'. Install it to use runtime: react.",
         );
     }
+
+    if (!ctx.enabled) return reactPluginFactory(options.reactOptions)
 
     const jsxRuntimeContent = createReactJsxRuntimeFile(
         ctx.packagesDir,
