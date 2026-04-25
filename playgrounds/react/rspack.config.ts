@@ -4,6 +4,7 @@ import { Runtime } from "@tooltify/integration-shared";
 import { createRequire } from "module";
 
 const require = createRequire(import.meta.url);
+const isDev = process.env.NODE_ENV === "development";
 
 export default {
   entry: "./src/index.tsx",
@@ -49,7 +50,8 @@ export default {
         shouldInjectSource: (type: any) => {
           return typeof type === "object" && typeof type?.target === "string"
         },
-      }
+      },
+      enabled: isDev,
     })
   ],
 
