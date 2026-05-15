@@ -1,0 +1,9 @@
+{
+  "packagesDir": "./packages",
+  "port": 6100,
+  "host": "localhost",
+  "auth": {
+    "secret": "dev-secret-key",
+    "salt": "dev-salt-key"
+  }
+}

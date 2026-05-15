@@ -15,6 +15,7 @@
   "scripts": {
     "build:lib": "tsup",
     "build": "npm run build:lib",
+    "dev:lib": "tsup --watch",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
