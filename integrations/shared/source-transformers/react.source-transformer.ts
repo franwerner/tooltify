@@ -1,5 +1,6 @@
 import { jsx as _jsx, jsxs as _jsxs, Fragment } from "react/jsx-runtime";
 import { SOURCE_PROPERTY_NAME } from "../constants/sourceProperyName.constant"
+import { stripModuleQuery } from "../helpers/stripModuleQuery.helper"
 
 export interface JsxRuntimeOptions {
   packagesDir: string
@@ -23,9 +24,10 @@ export function createJsxRuntime({ packagesDir, shouldInjectSource }: JsxRuntime
     source?: { fileName?: string; lineNumber?: number; columnNumber?: number },
   ) {
     if (shouldInject(type) && source?.fileName) {
-      const idx = source.fileName.indexOf(packagesDir)
+      const fileName = stripModuleQuery(source.fileName)
+      const idx = fileName.indexOf(packagesDir)
       if (idx >= 0) {
-        const relative = source.fileName.slice(idx + packagesDir.length)
+        const relative = fileName.slice(idx + packagesDir.length)
         const sourceValue = `${relative}:${source.lineNumber ?? 0}`
         const originalRef = props.ref
         props.ref = (el: any) => {

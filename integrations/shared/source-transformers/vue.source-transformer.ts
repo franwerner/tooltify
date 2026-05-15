@@ -1,5 +1,6 @@
 import type { NodeTransform, ElementNode } from "@vue/compiler-core"
 import { SOURCE_PROPERTY_NAME } from "../constants/sourceProperyName.constant"
+import { stripModuleQuery } from "../helpers/stripModuleQuery.helper"
 
 export interface VueSourceTransformOptions {
   packagesDir: string
@@ -31,9 +32,10 @@ export function createVueSourceTransform({
 
     if (!shouldInject) return
 
-    const filename = context.filename
-    if (!filename) return
+    const rawFilename = context.filename
+    if (!rawFilename) return
 
+    const filename = stripModuleQuery(rawFilename)
     const idx = filename.indexOf(packagesDir)
     if (idx < 0) return
 
