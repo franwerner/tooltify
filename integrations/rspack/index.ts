@@ -4,6 +4,8 @@ import { startServer, CLIENT_BUNDLE } from "@tooltify/core";
 import { createReactJsxRuntimeFile } from "@tooltify/integration-shared";
 import type { RspackStartOptions } from "./types";
 
+export { Runtime } from "@tooltify/integration-shared";
+
 export function rspackTooltify({ publicUrl, runtime, enabled }: RspackStartOptions): RspackPluginInstance {
     if (!enabled) return {
         apply() { }

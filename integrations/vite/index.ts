@@ -2,6 +2,8 @@ import fs from "node:fs";
 import type { Plugin } from "vite";
 import { startServer, CLIENT_BUNDLE } from "@tooltify/core";
 import { Runtime } from "@tooltify/integration-shared";
+
+export { Runtime } from "@tooltify/integration-shared";
 import type { RuntimeContext, ViteRuntimeOptions, ViteStartOptions } from "./types";
 import { createReactRuntime } from "./runtimes/react";
 import { createVueRuntime } from "./runtimes/vue";
