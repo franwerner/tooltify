@@ -19,8 +19,8 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@tooltify/core": "latest",
-    "@tooltify/integration-shared": "latest"
+    "@tooltify/core": "^0.2.0",
+    "@tooltify/integration-shared": "^0.4.1"
   },
   "peerDependencies": {
     "vite": "^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0"

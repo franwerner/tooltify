@@ -1,6 +1,7 @@
 {
   "name": "tooltify",
   "version": "0.0.0",
+  "private": true,
   "type": "module",
   "packageManager": "npm@10.8.2",
   "scripts": {
@@ -8,7 +9,10 @@
     "dev": "turbo run dev:lib dev:client dev:server",
     "dev:core": "turbo run dev:lib dev:client dev:server --filter=@tooltify/core",
     "dev:server": "turbo run dev:lib dev:server --filter=@tooltify/core",
-    "typecheck": "turbo run typecheck"
+    "typecheck": "turbo run typecheck",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "release": "turbo run build && changeset publish"
   },
   "keywords": [
     "devtools",
@@ -32,6 +36,7 @@
     "react-dom": "^19.2.4"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.31.0",
     "@types/node": "^25.4.0",
     "tsup": "^8.5.1",
     "tsx": "^4.21.0",
