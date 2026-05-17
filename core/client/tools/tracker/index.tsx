@@ -11,6 +11,7 @@ import { EditorFab } from "../editor/components/EditorFab";
 import { openSource } from "../../shared/utils/openSource";
 import { loadServerMeta } from "../../shared/utils/serverMeta";
 import { useActiveTool } from "../../shared/components/ActiveToolContext";
+import { LightDomPortal } from "../../shared/components/LightDomPortal";
 
 export const SourceTracker: React.FC = () => {
   const modalRef = useRef<HTMLDivElement>(null);
@@ -68,7 +69,11 @@ export const SourceTracker: React.FC = () => {
       {!capture && active && <HoverOverlay modalRef={modalRef} fabRef={fabRef} />}
       {editorPicking && <HoverOverlay modalRef={modalRef} fabRef={fabRef} color={IDE_COLOR} />}
       {picking && <HoverOverlay modalRef={modalRef} fabRef={fabRef} color={CO} />}
-      {editorSource && <MiniEditor source={editorSource} onClose={closeEditor} />}
+      {editorSource && (
+        <LightDomPortal>
+          <MiniEditor source={editorSource} onClose={closeEditor} />
+        </LightDomPortal>
+      )}
     </>
   );
 };

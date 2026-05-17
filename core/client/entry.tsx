@@ -5,6 +5,7 @@ import { AuthGate } from "./features/auth/AuthGate";
 import { DevtoolsPanel } from "./tools/build-monitor";
 import { DevtoolsPortal } from "./tools/build-monitor/components/DevtoolsPortal";
 import { SourceTracker } from "./tools/tracker";
+import { setDevtoolsShadowRoot } from "./shared/utils/devtoolsShadowRoot";
 
 const Devtools: React.FC = () => (
   <AuthGate>
@@ -19,9 +20,17 @@ const Devtools: React.FC = () => (
 
 // Auto-mount when the script loads
 const mount = () => {
+  const host = document.createElement("div");
+  host.id = "tooltify-host";
+  document.body.appendChild(host);
+
+  // Shadow root abierto: aísla el CSS del host de la UI de la devtools
+  const shadow = host.attachShadow({ mode: "open" });
+  setDevtoolsShadowRoot(shadow);
+
   const el = document.createElement("div");
   el.id = "devtools-root";
-  document.body.appendChild(el);
+  shadow.appendChild(el);
   createRoot(el).render(<Devtools />);
 };
 

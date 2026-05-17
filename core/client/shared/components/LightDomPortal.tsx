@@ -1,14 +1,12 @@
 import { useRef } from "react";
 import { createPortal } from "react-dom";
-import tailwindCss from "../../../styles/tailwind.css?inline";
-import { getDevtoolsShadowRoot } from "../../../shared/utils/devtoolsShadowRoot";
+import tailwindCss from "../../styles/tailwind.css?inline";
 
-const CONTAINER_ID = "devtools-portal-root";
-const STYLE_ID = "tooltify-tw";
+const CONTAINER_ID = "tooltify-lightdom-root";
+const STYLE_ID = "tooltify-tw-lightdom";
 
 const getContainer = (): HTMLDivElement => {
-  const shadow = getDevtoolsShadowRoot();
-  let container = shadow.getElementById(CONTAINER_ID) as HTMLDivElement | null;
+  let container = document.getElementById(CONTAINER_ID) as HTMLDivElement | null;
   if (!container) {
     container = document.createElement("div");
     container.id = CONTAINER_ID;
@@ -20,24 +18,29 @@ const getContainer = (): HTMLDivElement => {
     container.style.overflow = "visible";
     container.style.zIndex = "2147483647";
     container.style.pointerEvents = "none";
-    shadow.appendChild(container);
+    document.body.appendChild(container);
   }
 
-  if (!shadow.getElementById(STYLE_ID)) {
+  if (!document.getElementById(STYLE_ID)) {
     const style = document.createElement("style");
     style.id = STYLE_ID;
     style.textContent = tailwindCss;
-    shadow.appendChild(style);
+    container.appendChild(style);
   }
 
   return container;
 };
 
-export const DevtoolsPortal: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+// Portal en light DOM (fuera del shadow root) para Monaco, que no funciona
+// confiable dentro de Shadow DOM. `all: revert` corta la herencia de CSS del
+// host en el wrapper; las clases tfy- de Tailwind re-estilan en los descendientes.
+export const LightDomPortal: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const elRef = useRef<HTMLDivElement>(getContainer());
 
   return createPortal(
-    <div className="tfy-pointer-events-auto">{children}</div>,
+    <div style={{ all: "revert" }}>{children}</div>,
     elRef.current
   );
 };
