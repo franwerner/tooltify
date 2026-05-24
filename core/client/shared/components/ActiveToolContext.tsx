@@ -1,13 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
+import { useCommand } from "../keybindings/Keymap";
 
 export type ToolId = "monitor" | "editor" | null;
-
-// Shift+Fn → tool mapping (centralised keyboard shortcuts)
-const HOTKEYS: Record<string, ToolId> = {
-  F1: "monitor",
-  F2: null,       // F2 reserved for inspect (handled separately)
-  F3: "editor",
-};
 
 interface ActiveToolState {
   activeTool: ToolId;
@@ -44,19 +38,14 @@ export const ActiveToolProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const isOpen = useCallback((tool: ToolId) => activeTool === tool, [activeTool]);
 
-  // Centralised keyboard shortcuts: Escape + Shift+F1/F3/F4
+  useCommand("monitor.toggle", () => toggle("monitor"));
+  useCommand("editor.toggle", () => toggle("editor"));
+
+  // Escape cierra el tool activo. Queda local (no en el dispatcher) porque su
+  // efecto depende del contexto: solo actúa si hay un tool abierto.
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        if (activeTool !== null) setActiveTool(null);
-        return;
-      }
-      if (!e.shiftKey) return;
-      const tool = HOTKEYS[e.key];
-      if (tool) {
-        e.preventDefault();
-        setActiveTool((prev) => (prev === tool ? null : tool));
-      }
+      if (e.key === "Escape" && activeTool !== null) setActiveTool(null);
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);

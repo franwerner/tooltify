@@ -5,16 +5,21 @@ import { AuthGate } from "./features/auth/AuthGate";
 import { DevtoolsPanel } from "./tools/build-monitor";
 import { DevtoolsPortal } from "./tools/build-monitor/components/DevtoolsPortal";
 import { SourceTracker } from "./tools/tracker";
+import { InfoTool } from "./tools/info";
+import { KeymapProvider } from "./shared/keybindings/Keymap";
 import { setDevtoolsShadowRoot } from "./shared/utils/devtoolsShadowRoot";
 
 const Devtools: React.FC = () => (
   <AuthGate>
-    <ActiveToolProvider>
-      <DevtoolsPortal>
-        <DevtoolsPanel />
-        <SourceTracker />
-      </DevtoolsPortal>
-    </ActiveToolProvider>
+    <KeymapProvider>
+      <ActiveToolProvider>
+        <DevtoolsPortal>
+          <DevtoolsPanel />
+          <SourceTracker />
+          <InfoTool />
+        </DevtoolsPortal>
+      </ActiveToolProvider>
+    </KeymapProvider>
   </AuthGate>
 );
 

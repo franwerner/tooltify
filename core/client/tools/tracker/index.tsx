@@ -12,13 +12,17 @@ import { openSource } from "../../shared/utils/openSource";
 import { loadServerMeta } from "../../shared/utils/serverMeta";
 import { useActiveTool } from "../../shared/components/ActiveToolContext";
 import { LightDomPortal } from "../../shared/components/LightDomPortal";
+import { useKeyHeld } from "../../shared/hooks/useKeyHeld";
+import { getHoldKeys } from "../../shared/keybindings/shortcuts";
+import { Toast } from "../../shared/components/Toast";
 
 export const SourceTracker: React.FC = () => {
   const modalRef = useRef<HTMLDivElement>(null);
   const fabRef = useRef<HTMLDivElement>(null);
   const tool = useActiveTool();
+  const paused = useKeyHeld(...getHoldKeys("tracker.pause"));
 
-  const { active, setActive, capture, close } = useInspectMode(modalRef, fabRef);
+  const { active, setActive, capture, close, toast } = useInspectMode(modalRef, fabRef, paused);
   const [picking, setPicking] = useState(false);
 
   const {
@@ -28,7 +32,7 @@ export const SourceTracker: React.FC = () => {
     closeEditor,
     toggleEditorPick,
     deactivateEditorPick,
-  } = useEditorPickMode(tool, setActive, active);
+  } = useEditorPickMode(tool, setActive, active, paused);
 
   // Prefetch server meta (root path) so copy actions are instant
   useEffect(() => {
@@ -66,14 +70,15 @@ export const SourceTracker: React.FC = () => {
           <EditorFab active={editorPicking || !!editorSource} onClick={toggleEditorPick} />
         </div>
       )}
-      {!capture && active && <HoverOverlay modalRef={modalRef} fabRef={fabRef} />}
-      {editorPicking && <HoverOverlay modalRef={modalRef} fabRef={fabRef} color={IDE_COLOR} />}
+      {!capture && active && !paused && <HoverOverlay modalRef={modalRef} fabRef={fabRef} />}
+      {editorPicking && !paused && <HoverOverlay modalRef={modalRef} fabRef={fabRef} color={IDE_COLOR} />}
       {picking && <HoverOverlay modalRef={modalRef} fabRef={fabRef} color={CO} />}
       {editorSource && (
         <LightDomPortal>
           <MiniEditor source={editorSource} onClose={closeEditor} />
         </LightDomPortal>
       )}
+      <Toast message={toast} />
     </>
   );
 };

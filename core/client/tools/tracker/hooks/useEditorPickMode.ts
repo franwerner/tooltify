@@ -8,7 +8,8 @@ const isOwnUI = (t: Node) =>
 export function useEditorPickMode(
   tool: ReturnType<typeof useActiveTool>,
   setActive: (v: boolean) => void,
-  active: boolean
+  active: boolean,
+  paused: boolean
 ) {
   const [editorSource, setEditorSource] = useState<string | null>(null);
   const [editorPicking, setEditorPicking] = useState(false);
@@ -29,7 +30,7 @@ export function useEditorPickMode(
 
   // Crosshair cursor + click-to-pick when editorPicking
   useEffect(() => {
-    if (!editorPicking) return;
+    if (!editorPicking || paused) return;
 
     const style = document.createElement("style");
     style.setAttribute("data-editor-pick", "");
@@ -73,7 +74,7 @@ export function useEditorPickMode(
       window.removeEventListener("keydown", onEscape, true);
       style.remove();
     };
-  }, [editorPicking]);
+  }, [editorPicking, paused]);
 
   // Deactivate editor pick when inspect mode activates
   useEffect(() => {
