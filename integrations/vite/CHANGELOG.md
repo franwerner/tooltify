@@ -1,5 +1,12 @@
 # @tooltify/integration-vite
 
+## 0.4.4
+
+### Patch Changes
+
+- Updated dependencies [306727c]
+  - @tooltify/core@0.5.0
+
 ## 0.4.3
 
 ### Patch Changes
