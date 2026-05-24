@@ -38,7 +38,7 @@ export function startServer(): ServerInstance {
 
   const server = http.createServer(app);
   const { agentWs, buildsNs } = initSocket(server, auth, vault, config.auth.secret);
-  const editor = new EditorService(config.packagesDir, agentWs);
+  const editor = new EditorService(config.packagesDir, agentWs, config.editorPathMap);
 
   const buildTracker = new BuildTrackerService(buildsNs, userTracker);
 

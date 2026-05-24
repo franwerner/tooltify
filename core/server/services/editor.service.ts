@@ -4,15 +4,24 @@ import type { AgentSocketServer } from "../presentation/ws/agent";
 import { CommandActions, type AgentCommand } from "#common/types/agent-ws.types";
 import { TooltifyError } from "#common/errors/tooltify.error";
 import { normalizePath } from "#common/utils/normalizedPath"
+import type { EditorPathMap } from "#common/helpers/load-config.helper"
 
 export class EditorService {
   constructor(
     private basePath: string,
     private agentWs: AgentSocketServer,
+    private editorPathMap?: EditorPathMap,
   ) { }
 
+  private remapPath(target: string): string {
+    if (!this.editorPathMap) return target;
+    const { from, to } = this.editorPathMap;
+    if (!target.startsWith(from)) return target;
+    return to + target.slice(from.length);
+  }
+
   getRoot(): string {
-    return this.basePath.replace(/\\/g, "/");
+    return this.remapPath(this.basePath.replace(/\\/g, "/"));
   }
 
   resolvePath(relPath: string): string {
@@ -57,7 +66,7 @@ export class EditorService {
     const line = match ? match[2] : null;
 
     const fullPath = this.resolvePath(relPath);
-    const target = line ? `${fullPath}:${line}` : fullPath;
+    const target = this.remapPath(line ? `${fullPath}:${line}` : fullPath);
 
     const command: AgentCommand = {
       action: CommandActions.OPEN_EDITOR,

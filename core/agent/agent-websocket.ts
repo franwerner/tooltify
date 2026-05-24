@@ -3,7 +3,6 @@ import { io, type Socket } from "socket.io-client"
 import { exec } from "child_process"
 import { CommandFactory, type IDEType, type ICommandAdapter } from "./command-factory"
 import { CommandActions, type AgentCommand, type WebSocketResponse } from "./types/agent.types"
-import type { EditorPathMap } from "#common/helpers/load-config.helper"
 
 const VALID_ACTIONS = new Set(Object.values(CommandActions))
 
@@ -13,7 +12,6 @@ interface AgentWebsocketOptions {
     ideType: IDEType
     remote: boolean
     token: string
-    editorPathMap?: EditorPathMap
 }
 
 class AgentWebsocket {
@@ -23,25 +21,16 @@ class AgentWebsocket {
     private agentName: string
     private port: number
     private token: string
-    private editorPathMap?: EditorPathMap
 
-    constructor({ agentName, port, ideType, remote, token, editorPathMap }: AgentWebsocketOptions) {
+    constructor({ agentName, port, ideType, remote, token }: AgentWebsocketOptions) {
         this.agentName = agentName
         this.port = port
         this.token = token
-        this.editorPathMap = editorPathMap
         this.commandAdapter = CommandFactory.create({
             ide: ideType,
             os: process.platform,
             remote,
         })
-    }
-
-    private remapEditorPath(target?: string): string | undefined {
-        if (!target || !this.editorPathMap) return target
-        const { from, to } = this.editorPathMap
-        if (!target.startsWith(from)) return target
-        return to + target.slice(from.length)
     }
 
     private send<T = any>(data: WebSocketResponse<T>) {
@@ -72,7 +61,7 @@ class AgentWebsocket {
 
         switch (msg.action) {
             case CommandActions.OPEN_EDITOR:
-                command = this.commandAdapter.openEditor(this.remapEditorPath(msg.payload?.path))
+                command = this.commandAdapter.openEditor(msg.payload?.path)
                 break
         }
 
