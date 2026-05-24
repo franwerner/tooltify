@@ -2,10 +2,16 @@ import { CONFIG_DIRNAME } from "#common/constant/configDirname.constant";
 import { readFileSync } from "fs";
 import path from "path";
 
+export interface EditorPathMap {
+  from: string;
+  to: string;
+}
+
 export interface TooltifyConfig {
   port: number;
   host: string;
   packagesDir: string;
+  editorPathMap?: EditorPathMap;
   auth: {
     salt: string;
     secret: string;

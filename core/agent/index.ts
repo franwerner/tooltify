@@ -16,7 +16,7 @@ const getEnv = <K extends keyof EnvMap>(key: K): EnvMap[K] => {
     return value as EnvMap[K]
 }
 
-const { port, auth } = loadConfig()
+const { port, auth, editorPathMap } = loadConfig()
 
 const agentName = getEnv("AGENT_NAME")
 const hash = getEnv("AGENT_HASH")
@@ -28,4 +28,5 @@ new AgentWebsocket({
     ideType: getEnv("IDE_TYPE"),
     remote: process.env.REMOTE === "true",
     token,
+    editorPathMap,
 }).start()
