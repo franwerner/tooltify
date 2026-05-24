@@ -1,6 +1,6 @@
 {
   "name": "@tooltify/integration-vite",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -19,7 +19,7 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@tooltify/core": "^0.3.0",
+    "@tooltify/core": "^0.4.0",
     "@tooltify/integration-shared": "^0.4.1"
   },
   "peerDependencies": {
