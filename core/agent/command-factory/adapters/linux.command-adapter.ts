@@ -17,32 +17,37 @@ class LinuxCommandAdapter implements ICommandAdapter {
 
     constructor(private ide: IDEType, private remote: boolean) { }
 
-    private discoverIpc(): string {
+    private remoteCommand(gotoArg: string): string {
         /**
-         * Solo es algo que se hacen linux, ya que solo esta preparado para servidor remotos dentro de linux (o en la pratica es lo mas comun).
+         * Solo aplica en linux, que es donde corre el server remoto (WSL/SSH).
+         * El binario del remote-cli se resuelve desde el mismo proceso del que se
+         * extrae el IPC (vía /proc/$pid/exe) para atarlo a la versión del server
+         * en ejecución, en vez de depender del PATH: con el spawn lazy desde el
+         * bundler, `which` cae al code de Windows en /mnt/c (path con espacios).
          */
         const processName = IDE_PROCESS[this.ide]
         const ipcEnvVar = IDE_IPC_ENV[this.ide]
+        const binary = IDE_BINARY[this.ide]
 
-        const findPids = `pgrep -f "${processName}"`
-        const readEnv = `cat /proc/$pid/environ 2>/dev/null | tr '\\0' '\\n'`
-        const extractVar = `grep -m1 "^${ipcEnvVar}=" | cut -d= -f2`
-        const loop = `for pid in $(${findPids}); do val=$(${readEnv} | ${extractVar}); [ -n "$val" ] && echo "$val" && break; done`
-
-        return `$(${loop})`
+        return [
+            `for pid in $(pgrep -f "${processName}"); do`,
+            `ipc=$(cat /proc/$pid/environ 2>/dev/null | tr '\\0' '\\n' | grep -m1 "^${ipcEnvVar}=" | cut -d= -f2);`,
+            `[ -n "$ipc" ] || continue;`,
+            `bin="$(dirname "$(readlink /proc/$pid/exe)")/bin/remote-cli/${binary}";`,
+            `${ipcEnvVar}="$ipc" "$bin"${gotoArg};`,
+            `break;`,
+            `done`,
+        ].join(" ")
     }
 
     openEditor(targetPath?: string): string {
         const binary = IDE_BINARY[this.ide]
         const gotoFlag = IDE_GOTO_FLAG[this.ide]
-        const pathArg = targetPath ? ` ${gotoFlag} "${targetPath}"` : ""
-        const whichBinary = `$(which ${binary})${pathArg}`
+        const gotoArg = targetPath ? ` ${gotoFlag} "${targetPath}"` : ""
         if (this.remote) {
-            const ipcEnvVar = IDE_IPC_ENV[this.ide]
-            const ipc = this.discoverIpc()
-            return `${ipcEnvVar}=${ipc} ${whichBinary}`
+            return this.remoteCommand(gotoArg)
         }
-        return whichBinary
+        return `"$(which ${binary})"${gotoArg}`
     }
 }
 
