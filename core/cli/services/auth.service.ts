@@ -33,13 +33,3 @@ export function bootstrapGlobalConfig(opts: { ideType: IDEType; remote: boolean 
     }
     fs.writeFileSync(GLOBAL_CONFIG_PATH, JSON.stringify(initial, null, 2), { mode: 0o600 })
 }
-
-/** @deprecated Will be removed in batch 2 when CLI flow is rewritten. */
-export function computeHash(_password: string): string {
-    throw new Error("computeHash: use server-side registration via POST /auth/register")
-}
-
-/** @deprecated Will be removed in batch 2 when CLI flow is rewritten. */
-export function persistUserHash(_username: string, _hash: string): void {
-    throw new Error("persistUserHash: use server-side registration via POST /auth/register")
-}
