@@ -16,14 +16,24 @@ export async function startCommand(): Promise<void> {
 
     bootstrapGlobalConfig({ ideType: config.ideType as IDEType, remote: config.remote })
 
-    // Login against the project server to obtain a session token
+    // En el primer arranque el usuario aún no existe en el store del proyecto;
+    // un 404 dispara el registro (bootstrap del owner) antes de reintentar el login.
     let token: string
     try {
-        const res = await fetch(`${serverUrl}/auth/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ user: agentName, password: config.password }),
-        })
+        const headers = { "Content-Type": "application/json" }
+        const credentials = JSON.stringify({ user: agentName, password: config.password })
+
+        let res = await fetch(`${serverUrl}/auth/login`, { method: "POST", headers, body: credentials })
+
+        if (res.status === 404) {
+            const reg = await fetch(`${serverUrl}/auth/register`, { method: "POST", headers, body: credentials })
+            if (!reg.ok) {
+                p.log.error(`Registration not allowed (${reg.status}). Ask the project owner to register "${agentName}".`)
+                return
+            }
+            res = await fetch(`${serverUrl}/auth/login`, { method: "POST", headers, body: credentials })
+        }
+
         if (!res.ok) {
             const body = await res.json().catch(() => ({})) as Record<string, unknown>
             p.log.error(`Login failed: ${(body as any).message ?? res.status}`)
