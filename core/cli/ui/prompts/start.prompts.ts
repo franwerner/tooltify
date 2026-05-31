@@ -10,28 +10,39 @@ const REMOTE_OPTIONS = [
     { value: "no", label: "No — local machine" },
 ]
 
-export interface StartConfig {
+export interface EditorConfig {
     ideType: string
     remote: boolean
+}
+
+export interface StartConfig extends EditorConfig {
     password: string
+}
+
+export async function askEditorConfig(defaults?: Partial<EditorConfig>): Promise<EditorConfig | null> {
+    const ideType = await p.select({
+        message: "Editor",
+        options: IDE_OPTIONS,
+        initialValue: defaults?.ideType,
+    })
+    if (p.isCancel(ideType)) return null
+
+    const remoteAnswer = await p.select({
+        message: "Is the editor running remotely? (e.g. VS Code Remote WSL/SSH)",
+        options: REMOTE_OPTIONS,
+        initialValue: defaults?.remote === undefined ? undefined : (defaults.remote ? "yes" : "no"),
+    })
+    if (p.isCancel(remoteAnswer)) return null
+
+    return { ideType: ideType as string, remote: remoteAnswer === "yes" }
 }
 
 export async function askStartConfig(): Promise<StartConfig | null> {
     const password = await p.password({ message: "Password" })
     if (p.isCancel(password)) return null
 
-    const ideType = await p.select({ message: "Editor", options: IDE_OPTIONS })
-    if (p.isCancel(ideType)) return null
+    const editor = await askEditorConfig()
+    if (!editor) return null
 
-    const remoteAnswer = await p.select({
-        message: "Is the editor running remotely? (e.g. VS Code Remote WSL/SSH)",
-        options: REMOTE_OPTIONS,
-    })
-    if (p.isCancel(remoteAnswer)) return null
-
-    return {
-        ideType: ideType as string,
-        remote: remoteAnswer === "yes",
-        password: password as string,
-    }
+    return { ...editor, password }
 }

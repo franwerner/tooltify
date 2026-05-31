@@ -1,11 +1,11 @@
 import * as p from "@clack/prompts"
 import os from "os"
-import { startDaemon } from "../../daemon/lifecycle"
+import { startDaemon, restartDaemon } from "../../daemon/lifecycle"
 import { bootstrapGlobalConfig } from "../../services/auth.service"
-import { loadConfig, loadToken, persistToken, projectKey } from "#common/helpers/load-config.helper"
+import { loadConfig, loadGlobalConfig, loadToken, persistToken, projectKey } from "#common/helpers/load-config.helper"
 import type { HomeToken } from "#common/helpers/load-config.helper"
 import type { IDEType } from "#common/types/ide.types"
-import { askStartConfig } from "../prompts/start.prompts"
+import { askStartConfig, askEditorConfig } from "../prompts/start.prompts"
 
 // Lee el exp del JWT sin verificar la firma, solo para decidir si la sesión sigue
 // vigente y evitar re-pedir el password. El server revalida en la conexión real.
@@ -18,12 +18,12 @@ function tokenStillValid(jwt: string): boolean {
     }
 }
 
-function launchAgent(agentName: string): void {
+function launchAgent(agentName: string, restart: boolean): void {
     const spinner = p.spinner()
-    spinner.start(`Starting agent (${agentName})...`)
+    spinner.start(`${restart ? "Restarting" : "Starting"} agent (${agentName})...`)
     try {
-        const pid = startDaemon({ agentName })
-        spinner.stop(`Agent started (${agentName}) — PID: ${pid}`)
+        const pid = restart ? restartDaemon({ agentName }) : startDaemon({ agentName })
+        spinner.stop(`Agent ${restart ? "restarted" : "started"} (${agentName}) — PID: ${pid}`)
     } catch (err) {
         spinner.stop("Failed to start agent")
         p.log.error(err instanceof Error ? err.message : String(err))
@@ -37,8 +37,18 @@ export async function startCommand(): Promise<void> {
 
     const existing = loadToken(key)
     if (existing && tokenStillValid(existing.token)) {
-        p.log.info("Existing session found — starting agent without login.")
-        launchAgent(agentName)
+        // Sesión válida: no se re-pide password, pero sí se permite cambiar el editor.
+        // El agente lee ideType/remote una sola vez al arrancar, así que solo se reinicia
+        // si esos settings cambiaron — si no, no se interrumpe al agente en curso.
+        let current: { ideType?: IDEType; remote?: boolean } = {}
+        try { const g = loadGlobalConfig(); current = { ideType: g.ideType, remote: g.remote } } catch { }
+
+        const editor = await askEditorConfig({ ideType: current.ideType, remote: current.remote })
+        if (!editor) return
+        bootstrapGlobalConfig({ ideType: editor.ideType as IDEType, remote: editor.remote })
+
+        const changed = editor.ideType !== current.ideType || editor.remote !== current.remote
+        launchAgent(agentName, changed)
         return
     }
 
@@ -85,5 +95,5 @@ export async function startCommand(): Promise<void> {
     }
     persistToken(key, homeToken)
 
-    launchAgent(agentName)
+    launchAgent(agentName, true)
 }

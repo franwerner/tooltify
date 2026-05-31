@@ -34,3 +34,12 @@ export function stopDaemon(agentName: string): void {
     process.kill(pid)
     fs.unlinkSync(pidFile)
 }
+
+export function restartDaemon(options: StartOptions): number {
+    const status = getStatus(options.agentName)
+    if (status.running && status.pid) {
+        try { process.kill(status.pid) } catch { }
+        try { fs.unlinkSync(pidFilePath(options.agentName)) } catch { }
+    }
+    return startDaemon(options)
+}
