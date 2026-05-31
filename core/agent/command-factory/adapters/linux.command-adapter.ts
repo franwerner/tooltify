@@ -12,6 +12,11 @@ const IDE_IPC_ENV: Record<IDEType, string> = {
     antigravity: "ANTIGRAVITY_IPC_HOOK",
 }
 
+const IDE_SERVER_DIR: Record<IDEType, string> = {
+    vscode: ".vscode-server",
+    antigravity: ".antigravity-server",
+}
+
 
 class LinuxCommandAdapter implements ICommandAdapter {
 
@@ -20,23 +25,29 @@ class LinuxCommandAdapter implements ICommandAdapter {
     private remoteCommand(gotoArg: string): string {
         /**
          * Solo aplica en linux, que es donde corre el server remoto (WSL/SSH).
-         * El binario del remote-cli se resuelve desde el mismo proceso del que se
-         * extrae el IPC (vía /proc/$pid/exe) para atarlo a la versión del server
-         * en ejecución, en vez de depender del PATH: con el spawn lazy desde el
-         * bundler, `which` cae al code de Windows en /mnt/c (path con espacios).
+         * Elige el socket IPC más reciente entre los que referencia un proceso del
+         * server vivo: cada reload/reconexión deja sockets stale en /run/user, y
+         * el más nuevo corresponde a la ventana actual. El binario remote-cli se
+         * resuelve desde el install del server (no del /proc/exe del pid, que puede
+         * ser un shell y dar una ruta inexistente, ni del PATH, que en spawn lazy
+         * cae al code de Windows en /mnt/c con espacios).
          */
         const processName = IDE_PROCESS[this.ide]
         const ipcEnvVar = IDE_IPC_ENV[this.ide]
         const binary = IDE_BINARY[this.ide]
+        const serverDir = IDE_SERVER_DIR[this.ide]
 
         return [
+            `sock=""; newest=0;`,
             `for pid in $(pgrep -f "${processName}"); do`,
-            `ipc=$(cat /proc/$pid/environ 2>/dev/null | tr '\\0' '\\n' | grep -m1 "^${ipcEnvVar}=" | cut -d= -f2);`,
-            `[ -n "$ipc" ] || continue;`,
-            `bin="$(dirname "$(readlink /proc/$pid/exe)")/bin/remote-cli/${binary}";`,
-            `${ipcEnvVar}="$ipc" "$bin"${gotoArg};`,
-            `break;`,
-            `done`,
+            `ipc=$(tr '\\0' '\\n' < /proc/$pid/environ 2>/dev/null | grep -m1 "^${ipcEnvVar}=" | cut -d= -f2);`,
+            `[ -S "$ipc" ] || continue;`,
+            `m=$(stat -c %Y "$ipc" 2>/dev/null || echo 0);`,
+            `[ "$m" -gt "$newest" ] && { newest=$m; sock=$ipc; };`,
+            `done;`,
+            `bin=$(ls -t "$HOME/${serverDir}"/bin/*/bin/remote-cli/${binary} 2>/dev/null | head -1);`,
+            `if [ -z "$sock" ] || [ -z "$bin" ]; then echo "tooltify: no active ${binary} window found" >&2; exit 1; fi;`,
+            `${ipcEnvVar}="$sock" "$bin"${gotoArg};`,
         ].join(" ")
     }
 
