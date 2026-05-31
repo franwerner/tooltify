@@ -14,6 +14,7 @@ export interface RouterDeps {
   editor: EditorService;
   userTracker: UserTrackerService;
   buildTracker: BuildTrackerService;
+  cookieName: string;
 }
 
 export function createRouter(deps: RouterDeps) {
@@ -21,9 +22,9 @@ export function createRouter(deps: RouterDeps) {
 
   router.use(express.json({ limit: "10mb" }));
 
-  const { getSessionUser, sessionGuard } = createSessionMiddleware(deps.auth);
+  const { getSessionUser, sessionGuard } = createSessionMiddleware(deps.auth, deps.cookieName);
 
-  router.use("/auth", createAuthRoutes(deps.auth, getSessionUser, sessionGuard));
+  router.use("/auth", createAuthRoutes(deps.auth, getSessionUser, sessionGuard, deps.cookieName));
 
   router.use(sessionGuard);
 

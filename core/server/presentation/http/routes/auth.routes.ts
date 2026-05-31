@@ -6,6 +6,7 @@ export const createAuthRoutes = (
   auth: AuthService,
   getSessionUser: (req: any) => string | null,
   sessionGuard: (req: any, res: any, next: any) => void,
+  cookieName: string,
 ) => {
   const router = Router();
 
@@ -23,7 +24,7 @@ export const createAuthRoutes = (
     const data = auth.login(user, password);
     res.setHeader(
       "Set-Cookie",
-      `tooltify_session=${data.token}; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=${auth.expiry}`
+      `${cookieName}=${data.token}; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=${auth.expiry}`
     );
     res.json({ message: "Login successful", data });
   });
@@ -46,7 +47,7 @@ export const createAuthRoutes = (
   });
 
   router.get("/logout", (_req, res) => {
-    res.setHeader("Set-Cookie", "tooltify_session=; Path=/; HttpOnly; Max-Age=0");
+    res.setHeader("Set-Cookie", `${cookieName}=; Path=/; HttpOnly; Max-Age=0`);
     res.json({ message: "Logged out" });
   });
 

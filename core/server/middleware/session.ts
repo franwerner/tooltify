@@ -10,10 +10,11 @@ declare global {
   }
 }
 
-export const createSessionMiddleware = (auth: AuthService) => {
+export const createSessionMiddleware = (auth: AuthService, cookieName: string) => {
+  const cookieRegex = new RegExp(`${cookieName}=([^;]+)`);
   const getSessionUser = (req: Request): string | null => {
     const cookies = req.headers.cookie || "";
-    const match = cookies.match(/tooltify_session=([^;]+)/);
+    const match = cookies.match(cookieRegex);
     if (!match) return null;
     const payload = auth.jwtVerify(match[1]);
     return payload?.user || null;

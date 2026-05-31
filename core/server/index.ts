@@ -33,6 +33,9 @@ export function startServer(): ServerInstance {
   const config = loadConfig();
   const globalConfig = loadGlobalConfig();
   const port = config.port;
+  // Las cookies se aíslan por dominio, no por puerto: con varios proyectos en
+  // localhost una sesión pisaría la otra. El nombre por-puerto las separa.
+  const cookieName = `tooltify_session_${port}`;
 
   const projectCwd = process.cwd();
   let authStore = loadProjectAuthStore(projectCwd);
@@ -67,13 +70,13 @@ export function startServer(): ServerInstance {
   app.use(cors({ origin: true, credentials: true }));
 
   const server = http.createServer(app);
-  const { buildsNs, agentHub } = initSocket(server, auth);
+  const { buildsNs, agentHub } = initSocket(server, auth, cookieName);
 
   const editor = new EditorService(config.packagesDir, agentHub, config.editorPathMap);
 
   const buildTracker = new BuildTrackerService(buildsNs, userTracker);
 
-  app.use(createRouter({ auth, editor, userTracker, buildTracker }));
+  app.use(createRouter({ auth, editor, userTracker, buildTracker, cookieName }));
 
   server.listen(port, () => {
     console.log(`[tooltify] server running on http://localhost:${port}`);

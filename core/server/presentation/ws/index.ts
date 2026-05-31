@@ -9,12 +9,12 @@ export function initAgentWs(io: SocketServer, auth: AuthService): AgentSocketSer
     return new AgentSocketServer(io, auth)
 }
 
-export function initSocket(httpServer: Server, auth: AuthService): { io: SocketServer; buildsNs: ReturnType<typeof initBuildWs>; agentHub: AgentHub } {
+export function initSocket(httpServer: Server, auth: AuthService, cookieName: string): { io: SocketServer; buildsNs: ReturnType<typeof initBuildWs>; agentHub: AgentHub } {
     const io = new SocketServer(httpServer, {
         cors: { origin: true, credentials: true },
     })
 
-    const buildsNs = initBuildWs(io, auth)
+    const buildsNs = initBuildWs(io, auth, cookieName)
     const agentHub = initAgentWs(io, auth)
 
     return { io, buildsNs, agentHub }
