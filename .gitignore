@@ -26,3 +26,4 @@ Thumbs.db
 
 # Project-scoped auth store (server credentials, never committed)
 .tooltify/
+.codegraph/
