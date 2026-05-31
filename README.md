@@ -69,7 +69,16 @@ export default {
 };
 ```
 
-Después, desde un proyecto con `tooltify.config.json`, registrás tu sesión y arrancás el agente:
+Creá un `tooltify.config.json` en la raíz del proyecto:
+
+```json
+{
+  "packagesDir": "./src",
+  "port": 4100
+}
+```
+
+Después registrás tu sesión y arrancás el agente:
 
 ```bash
 npx tooltify   # → Start agent
