@@ -1,5 +1,6 @@
 import React from "react"
 import Editor, { type OnMount } from "@monaco-editor/react"
+import { registerVueLanguage } from "../utils/vueLanguage"
 
 interface Props {
     content: string | null
@@ -28,6 +29,7 @@ export const EditorArea: React.FC<Props> = ({ content, lang, loading, error, onM
                 onChange={(val) => onChange(val ?? "")}
                 onMount={onMount}
                 beforeMount={(monaco) => {
+                    registerVueLanguage(monaco)
                     monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
                         noSemanticValidation: true, noSyntaxValidation: true,
                     })

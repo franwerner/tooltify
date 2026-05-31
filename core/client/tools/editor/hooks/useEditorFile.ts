@@ -6,6 +6,7 @@ const LANG_MAP: Record<string, string> = {
     js: "javascript", jsx: "javascript",
     css: "css", json: "json", graphql: "graphql",
     md: "markdown", html: "html", scss: "scss", less: "less",
+    vue: "vue",
 }
 
 interface FileResponse {
