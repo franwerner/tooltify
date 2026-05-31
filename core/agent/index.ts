@@ -1,6 +1,6 @@
 
 import jwt from "jsonwebtoken"
-import { loadConfig } from "#common/helpers/load-config.helper"
+import { loadConfig, loadGlobalConfig } from "#common/helpers/load-config.helper"
 import { AgentWebsocket } from "./agent-websocket"
 import type { IDEType } from "./command-factory"
 
@@ -16,7 +16,8 @@ const getEnv = <K extends keyof EnvMap>(key: K): EnvMap[K] => {
     return value as EnvMap[K]
 }
 
-const { port, auth } = loadConfig()
+const { port } = loadConfig()
+const { auth } = loadGlobalConfig()
 
 const agentName = getEnv("AGENT_NAME")
 const hash = getEnv("AGENT_HASH")

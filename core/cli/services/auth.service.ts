@@ -2,6 +2,7 @@ import fs from "fs"
 import path from "path"
 import crypto from "crypto"
 import { CONFIG_DIRNAME } from "#common/constant/configDirname.constant"
+import { loadGlobalConfig, GLOBAL_CONFIG_PATH } from "#common/helpers/load-config.helper"
 
 export function assertTooltifyProject(): void {
     const configPath = path.join(process.cwd(), CONFIG_DIRNAME)
@@ -11,14 +12,12 @@ export function assertTooltifyProject(): void {
 }
 
 export function computeHash(password: string): string {
-    const configPath = path.join(process.cwd(), CONFIG_DIRNAME)
-    const config = JSON.parse(fs.readFileSync(configPath, "utf-8"))
-    return crypto.createHash("sha256").update(config.auth.salt + password).digest("hex")
+    const { auth } = loadGlobalConfig()
+    return crypto.createHash("sha256").update(auth.salt + password).digest("hex")
 }
 
 export function persistUserHash(username: string, hash: string): void {
-    const configPath = path.join(process.cwd(), CONFIG_DIRNAME)
-    const config = JSON.parse(fs.readFileSync(configPath, "utf-8"))
+    const config = loadGlobalConfig()
     config.auth.users[username] = { hash }
-    fs.writeFileSync(configPath, JSON.stringify(config, null, 2))
+    fs.writeFileSync(GLOBAL_CONFIG_PATH, JSON.stringify(config, null, 2), { mode: 0o600 })
 }

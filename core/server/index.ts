@@ -3,7 +3,7 @@ import express from "express";
 import cors from "cors";
 import { createRouter } from "./presentation/http/routes";
 import { initSocket } from "./presentation/ws";
-import { loadConfig } from "#common/helpers/load-config.helper";
+import { loadConfig, loadGlobalConfig } from "#common/helpers/load-config.helper";
 import { AuthService } from "./services/auth.service";
 import { VaultService } from "./services/vault.service";
 import { EditorService } from "./services/editor.service";
@@ -26,10 +26,16 @@ export function startServer(): ServerInstance {
   if (cachedInstance) return cachedInstance;
 
   const config = loadConfig();
+  const globalConfig = loadGlobalConfig();
   const port = config.port;
 
-  const vault = new VaultService(config.auth.secret);
-  const auth = new AuthService(config.auth, vault);
+  const vault = new VaultService(globalConfig.auth.secret);
+  const auth = new AuthService(globalConfig.auth, vault);
+
+  Object.entries(globalConfig.auth.users).forEach(([username, { hash }]) => {
+    vault.set(username, hash);
+  });
+
   const userTracker = new UserTrackerService(config.packagesDir);
   userTracker.start();
 
@@ -37,7 +43,7 @@ export function startServer(): ServerInstance {
   app.use(cors({ origin: true, credentials: true }));
 
   const server = http.createServer(app);
-  const { agentWs, buildsNs } = initSocket(server, auth, vault, config.auth.secret);
+  const { agentWs, buildsNs } = initSocket(server, auth, vault, globalConfig.auth.secret);
   const editor = new EditorService(config.packagesDir, agentWs, config.editorPathMap);
 
   const buildTracker = new BuildTrackerService(buildsNs, userTracker);
