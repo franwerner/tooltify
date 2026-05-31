@@ -1,59 +1,51 @@
 
-import { io, type Socket } from "socket.io-client"
+import http from "http"
+import { Server as SocketServer, type Socket } from "socket.io"
 import { exec } from "child_process"
+import jwt from "jsonwebtoken"
 import { CommandFactory, type IDEType, type ICommandAdapter } from "./command-factory"
 import { CommandActions, type AgentCommand, type WebSocketResponse } from "./types/agent.types"
 
 const VALID_ACTIONS = new Set(Object.values(CommandActions))
 
-interface AgentWebsocketOptions {
-    agentName: string
-    port: number
-    ideType: IDEType
-    remote: boolean
-    token: string
+interface ServerAgentTokenPayload {
+    kind: "server"
+    serverId: string
+    projectCwd: string
 }
 
-class AgentWebsocket {
+interface AgentServerOptions {
+    port: number
+    secret: string
+    ideType: IDEType
+    remote: boolean
+}
 
-    private socket!: Socket
+class AgentServer {
+
     private commandAdapter: ICommandAdapter
-    private agentName: string
-    private port: number
-    private token: string
 
-    constructor({ agentName, port, ideType, remote, token }: AgentWebsocketOptions) {
-        this.agentName = agentName
-        this.port = port
-        this.token = token
+    constructor(private opts: AgentServerOptions) {
         this.commandAdapter = CommandFactory.create({
-            ide: ideType,
+            ide: opts.ideType,
             os: process.platform,
-            remote,
+            remote: opts.remote,
         })
     }
 
-    private send<T = any>(data: WebSocketResponse<T>) {
+    private reply<T = any>(socket: Socket, data: WebSocketResponse<T>) {
         const normalized: WebSocketResponse<T> = { ...data }
         if (data.error) normalized.status = "error"
         else if (!normalized.status) normalized.status = "success"
-        this.socket.emit("response", normalized)
+        socket.emit("response", normalized)
     }
 
-    private onConnectError(e: Error) {
-        console.log(`[agent:ws] error — ${e.message}`)
-    }
-
-    private onConnect() {
-        console.log(`[agent:ws] connected — subscribed as "${this.agentName}"`)
-    }
-
-    private onCommand(msg: AgentCommand) {
+    private onCommand(socket: Socket, msg: AgentCommand) {
         console.log(`[agent:cmd] action="${msg.action}" payload=${JSON.stringify(msg.payload)}`)
 
         if (!VALID_ACTIONS.has(msg.action)) {
             console.log(`[agent:cmd] unknown action "${msg.action}" — rejected`)
-            this.send({ error: `Unknown action: ${msg.action}` })
+            this.reply(socket, { error: `Unknown action: ${msg.action}` })
             return
         }
 
@@ -70,35 +62,54 @@ class AgentWebsocket {
         exec(command, { windowsHide: true }, (err, stdout, stderr) => {
             if (err) {
                 console.log(`[agent:exec] error — ${stderr || err.message}`)
-                this.send({ error: stderr || err.message })
+                this.reply(socket, { error: stderr || err.message })
                 return
             }
             console.log(`[agent:exec] ok — ${stdout.trim() || "(no output)"}`)
-            this.send({ response: stdout.trim() })
+            this.reply(socket, { response: stdout.trim() })
         })
-    }
-
-    private onDisconnect(reason: string) {
-        console.log(`[agent:ws] disconnected — ${reason}`)
-    }
-
-    private connect() {
-        this.socket = io(`http://localhost:${this.port}/agent`, {
-            auth: { token: this.token },
-            reconnection: true,
-            reconnectionDelay: 1000,
-            reconnectionDelayMax: 10000,
-        })
-
-        this.socket.on("connect_error", (e) => this.onConnectError(e))
-        this.socket.on("connect", () => this.onConnect())
-        this.socket.on("command", (msg) => this.onCommand(msg))
-        this.socket.on("disconnect", (reason) => this.onDisconnect(reason))
     }
 
     start() {
-        this.connect()
+        const httpServer = http.createServer()
+        const io = new SocketServer(httpServer, {
+            cors: { origin: true },
+        })
+
+        io.use((socket, next) => {
+            const { token } = socket.handshake.auth
+            if (!token) return next(new Error("Missing token"))
+            try {
+                const payload = jwt.verify(token, this.opts.secret) as ServerAgentTokenPayload
+                socket.data = payload
+                next()
+            } catch {
+                console.log(`[agent:auth] rejected handshake — invalid token`)
+                next(new Error("Unauthorized"))
+            }
+        })
+
+        io.on("connection", (socket) => {
+            const { serverId, projectCwd } = socket.data as ServerAgentTokenPayload
+            console.log(`[agent:ws] server connected — serverId=${serverId} cwd=${projectCwd}`)
+            socket.on("command", (msg: AgentCommand) => this.onCommand(socket, msg))
+            socket.on("disconnect", (reason) => {
+                console.log(`[agent:ws] server disconnected — serverId=${serverId} reason=${reason}`)
+            })
+        })
+
+        httpServer.on("error", (err: NodeJS.ErrnoException) => {
+            if (err.code === "EADDRINUSE") {
+                console.error(`[agent] port ${this.opts.port} already in use — another agent instance may be running`)
+                process.exit(1)
+            }
+            throw err
+        })
+
+        httpServer.listen(this.opts.port, () => {
+            console.log(`[agent] listening on port ${this.opts.port}`)
+        })
     }
 }
 
-export { AgentWebsocket, type AgentWebsocketOptions }
+export { AgentServer, type AgentServerOptions }

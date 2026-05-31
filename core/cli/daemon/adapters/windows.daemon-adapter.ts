@@ -7,8 +7,8 @@ import { type IDaemonAdapter, type DaemonOptions } from "./base"
 
 class WindowsDaemonAdapter implements IDaemonAdapter {
     getAgentDir(): string {
-        const programData = process.env["ProgramData"] ?? "C:\\ProgramData"
-        return path.join(programData, "tooltify", "agents")
+        const appData = process.env["APPDATA"] ?? path.join(os.homedir(), "AppData", "Roaming")
+        return path.join(appData, "tooltify", "agents")
     }
 
     getCredentialsPath(): string {
