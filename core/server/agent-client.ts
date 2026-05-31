@@ -1,4 +1,3 @@
-
 import { io, type Socket } from "socket.io-client"
 import type { AgentCommand } from "#common/types/agent-ws.types"
 
@@ -11,6 +10,7 @@ interface AgentClientOptions {
 class AgentClient {
 
     private socket: Socket
+    private spawnAttempted = false
 
     constructor(private opts: AgentClientOptions) {
         this.socket = io(`http://localhost:${opts.port}`, {
@@ -21,12 +21,16 @@ class AgentClient {
         })
 
         this.socket.on("connect", () => {
+            this.spawnAttempted = false
             console.log(`[server:agent-client] connected to agent on port ${opts.port}`)
         })
 
         this.socket.on("connect_error", (err) => {
             console.log(`[server:agent-client] connect error — ${err.message}`)
-            opts.spawnIfDown()
+            if (!this.spawnAttempted) {
+                this.spawnAttempted = true
+                opts.spawnIfDown()
+            }
         })
 
         this.socket.on("disconnect", (reason) => {

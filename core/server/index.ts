@@ -1,4 +1,7 @@
 import http from "http";
+import crypto from "crypto";
+import os from "os";
+import jwt from "jsonwebtoken";
 import express from "express";
 import cors from "cors";
 import { createRouter } from "./presentation/http/routes";
@@ -9,17 +12,19 @@ import { VaultService } from "./services/vault.service";
 import { EditorService } from "./services/editor.service";
 import { UserTrackerService } from "./services/user-tracker.service";
 import { BuildTrackerService } from "./services/build-tracker.service";
+import { AgentClient } from "./agent-client";
+import { startDaemon } from "../cli/daemon/lifecycle";
 
 interface ServerInstance {
   config: ReturnType<typeof loadConfig>;
   port: number;
   buildTracker: BuildTrackerService;
-  agentWs: ReturnType<typeof initSocket>["agentWs"];
 }
 
 let cachedInstance: ServerInstance | null = null;
 let httpServerRef: http.Server | null = null;
 let userTrackerRef: UserTrackerService | null = null;
+let agentClientRef: AgentClient | null = null;
 let processCleanupAttached = false;
 
 export function startServer(): ServerInstance {
@@ -43,8 +48,23 @@ export function startServer(): ServerInstance {
   app.use(cors({ origin: true, credentials: true }));
 
   const server = http.createServer(app);
-  const { agentWs, buildsNs } = initSocket(server, auth, vault, globalConfig.auth.secret);
-  const editor = new EditorService(config.packagesDir, agentWs, config.editorPathMap);
+  const { buildsNs } = initSocket(server, auth);
+
+  const serverId = crypto.randomUUID();
+  const agentToken = jwt.sign(
+    { kind: "server", serverId, projectCwd: process.cwd() },
+    globalConfig.auth.secret,
+  );
+
+  const agentClient = new AgentClient({
+    port: globalConfig.agentPort,
+    token: agentToken,
+    spawnIfDown: () => startDaemon({ agentName: os.userInfo().username }),
+  });
+  agentClient.connect();
+  agentClientRef = agentClient;
+
+  const editor = new EditorService(config.packagesDir, agentClient, config.editorPathMap);
 
   const buildTracker = new BuildTrackerService(buildsNs, userTracker);
 
@@ -62,7 +82,6 @@ export function startServer(): ServerInstance {
     config,
     port,
     buildTracker,
-    agentWs,
   };
 
   if (!processCleanupAttached) {

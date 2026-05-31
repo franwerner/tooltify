@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from "fs";
 import path from "path";
-import type { AgentSocketServer } from "../presentation/ws/agent";
+import type { AgentClient } from "../agent-client";
 import { CommandActions, type AgentCommand } from "#common/types/agent-ws.types";
 import { TooltifyError } from "#common/errors/tooltify.error";
 import { normalizePath } from "#common/utils/normalizedPath"
@@ -9,7 +9,7 @@ import type { EditorPathMap } from "#common/helpers/load-config.helper"
 export class EditorService {
   constructor(
     private basePath: string,
-    private agentWs: AgentSocketServer,
+    private agentWs: AgentClient,
     private editorPathMap?: EditorPathMap,
   ) { }
 
