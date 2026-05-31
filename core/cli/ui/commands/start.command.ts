@@ -2,13 +2,14 @@ import * as p from "@clack/prompts"
 import os from "os"
 import { startDaemon } from "../../daemon/lifecycle"
 import { bootstrapGlobalConfig } from "../../services/auth.service"
-import { persistToken, projectKey } from "#common/helpers/load-config.helper"
+import { loadConfig, persistToken, projectKey } from "#common/helpers/load-config.helper"
 import type { HomeToken } from "#common/helpers/load-config.helper"
 import type { IDEType } from "#common/types/ide.types"
 import { askStartConfig } from "../prompts/start.prompts"
 
 export async function startCommand(): Promise<void> {
     const agentName = os.userInfo().username
+    const serverUrl = `http://localhost:${loadConfig().port}`
 
     const config = await askStartConfig()
     if (!config) return
@@ -18,10 +19,10 @@ export async function startCommand(): Promise<void> {
     // Login against the project server to obtain a session token
     let token: string
     try {
-        const res = await fetch(`${config.serverUrl}/auth/login`, {
+        const res = await fetch(`${serverUrl}/auth/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ user: config.username, password: config.password }),
+            body: JSON.stringify({ user: agentName, password: config.password }),
         })
         if (!res.ok) {
             const body = await res.json().catch(() => ({})) as Record<string, unknown>
@@ -36,11 +37,11 @@ export async function startCommand(): Promise<void> {
     }
 
     // Persist the session token so the agent can connect to this server on boot
-    const key = projectKey(config.serverUrl, process.cwd())
+    const key = projectKey(serverUrl, process.cwd())
     const homeToken: HomeToken = {
-        serverUrl: config.serverUrl,
+        serverUrl,
         token,
-        username: config.username,
+        username: agentName,
         projectCwd: process.cwd(),
     }
     persistToken(key, homeToken)
