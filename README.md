@@ -97,7 +97,11 @@ npx tooltify   # → Start agent
 ```json
 {
   "packagesDir": "./src",
-  "port": 4100
+  "port": 4100,
+  "editorPathMap": {
+    "from": "/app",
+    "to": "/home/user/projects/myapp"
+  }
 }
 ```
 
@@ -105,7 +109,7 @@ npx tooltify   # → Start agent
 |---|---|
 | `packagesDir` | Carpeta de código a rastrear, relativa a la raíz del proyecto. |
 | `port` | Puerto del server de ese proyecto. Único por proyecto si corrés varios a la vez. |
-| `editorPathMap` | Opcional `{ from, to }`. Remapeo de rutas cuando el server corre en contenedor y el editor abre en el host. |
+| `editorPathMap` | Opcional. Remapea las rutas que ve el server (`from`) a las que entiende el editor del host (`to`). Útil cuando el server corre en un contenedor: ej. el server resuelve `/app/src/App.tsx` pero el editor tiene que abrir `/home/user/projects/myapp/src/App.tsx`. |
 
 ### Auth del proyecto — `<proyecto>/.tooltify/` (gitignored)
 
