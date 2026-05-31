@@ -40,7 +40,12 @@ export const LightDomPortal: React.FC<{ children: React.ReactNode }> = ({
   const elRef = useRef<HTMLDivElement>(getContainer());
 
   return createPortal(
-    <div style={{ all: "revert" }}>{children}</div>,
+    // El container es pointer-events:none para no bloquear la página; se re-habilita
+    // en el contenido para que el editor reciba scroll/clicks (pointer-events hereda,
+    // así que `all: revert` por sí solo arrastra el `none` del container).
+    <div style={{ all: "revert" }}>
+      <div style={{ pointerEvents: "auto" }}>{children}</div>
+    </div>,
     elRef.current
   );
 };
