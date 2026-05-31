@@ -3,11 +3,6 @@ enum CommandActions {
     OPEN_EDITOR = "OPEN_EDITOR",
 }
 
-interface AgentSubscription {
-    agentName: string
-    hash: string
-}
-
 interface AgentCommand {
     action: CommandActions
     payload?: {
@@ -21,4 +16,4 @@ interface WebSocketResponse<T = any> {
     response?: T
 }
 
-export { CommandActions, type AgentSubscription, type AgentCommand, type WebSocketResponse }
+export { CommandActions, type AgentCommand, type WebSocketResponse }

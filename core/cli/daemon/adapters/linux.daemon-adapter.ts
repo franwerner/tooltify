@@ -1,6 +1,5 @@
 
 import fs from "fs"
-import os from "os"
 import path from "path"
 import { spawn } from "child_process"
 import { type IDaemonAdapter, type DaemonOptions } from "./base"
@@ -8,12 +7,6 @@ import { type IDaemonAdapter, type DaemonOptions } from "./base"
 class LinuxDaemonAdapter implements IDaemonAdapter {
     getAgentDir(): string {
         return "/tmp/tooltify/agents"
-    }
-
-    getCredentialsPath(): string {
-        const credPath = path.join(os.homedir(), ".tooltify", "credentials.json")
-        fs.mkdirSync(path.dirname(credPath), { recursive: true })
-        return credPath
     }
 
     start(options: DaemonOptions): number {

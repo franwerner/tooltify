@@ -100,7 +100,7 @@ class AgentServer {
 
         httpServer.on("error", (err: NodeJS.ErrnoException) => {
             if (err.code === "EADDRINUSE") {
-                console.error(`[agent] port ${this.opts.port} already in use — another agent instance may be running`)
+                console.error(`[agent] port ${this.opts.port} already in use. To use a different port, change agentPort in ~/.tooltify/config.json`)
                 process.exit(1)
             }
             throw err

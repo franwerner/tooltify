@@ -11,13 +11,6 @@ class WindowsDaemonAdapter implements IDaemonAdapter {
         return path.join(appData, "tooltify", "agents")
     }
 
-    getCredentialsPath(): string {
-        const appData = process.env["APPDATA"] ?? path.join(os.homedir(), "AppData", "Roaming")
-        const credPath = path.join(appData, "tooltify", "credentials.json")
-        fs.mkdirSync(path.dirname(credPath), { recursive: true })
-        return credPath
-    }
-
     start(options: DaemonOptions): number {
         const logFd = fs.openSync(options.logFile, "a")
         const child = spawn("node", [options.agentEntry], {
