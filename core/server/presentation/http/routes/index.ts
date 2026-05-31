@@ -23,7 +23,7 @@ export function createRouter(deps: RouterDeps) {
 
   const { getSessionUser, sessionGuard } = createSessionMiddleware(deps.auth);
 
-  router.use("/auth", createAuthRoutes(deps.auth, getSessionUser));
+  router.use("/auth", createAuthRoutes(deps.auth, getSessionUser, sessionGuard));
 
   router.use(sessionGuard);
 

@@ -1,12 +1,11 @@
 import * as p from "@clack/prompts"
 import os from "os"
 import { startDaemon } from "../../daemon/lifecycle"
-import { bootstrapGlobalConfig, computeHash, persistUserHash } from "../../services/auth.service"
-import { loadGlobalConfig } from "#common/helpers/load-config.helper"
-import { askPasswordAndConfirm } from "../prompts/auth.prompts"
+import { bootstrapGlobalConfig } from "../../services/auth.service"
 import { askStartConfig } from "../prompts/start.prompts"
 import type { IDEType } from "#common/types/ide.types"
 
+// TODO(batch-2): rewrite flow — prompt serverUrl, POST /auth/login, persist HomeToken, start agent
 export async function startCommand(): Promise<void> {
     const agentName = os.userInfo().username
 
@@ -14,17 +13,6 @@ export async function startCommand(): Promise<void> {
     if (!config) return
 
     bootstrapGlobalConfig({ ideType: config.ideType as IDEType, remote: config.remote })
-
-    let globalConfig = (() => { try { return loadGlobalConfig() } catch { return null } })()
-
-    if (!globalConfig?.auth?.users?.[agentName]) {
-        p.log.warn("No credentials found. Please register first.")
-        const result = await askPasswordAndConfirm()
-        if (!result) return
-        const hash = computeHash(result.password)
-        persistUserHash(agentName, hash)
-        p.log.success(`User "${agentName}" registered`)
-    }
 
     const spinner = p.spinner()
     spinner.start(`Starting agent (${agentName})...`)

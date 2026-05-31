@@ -23,3 +23,6 @@ Thumbs.db
 # TypeScript
 *.tsbuildinfo
 .turbo
+
+# Project-scoped auth store (server credentials, never committed)
+.tooltify/

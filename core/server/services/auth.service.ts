@@ -54,6 +54,11 @@ export class AuthService {
     return { token: this.jwtSign({ user, fp: entry.fp }), user };
   }
 
+  register(username: string, password: string): void {
+    const hash = crypto.createHash("sha256").update(this.salt + password).digest("hex");
+    this.vault.set(username, hash);
+  }
+
   get expiry() {
     return JWT_EXPIRY;
   }

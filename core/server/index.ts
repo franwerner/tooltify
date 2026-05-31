@@ -1,19 +1,20 @@
 import http from "http";
 import crypto from "crypto";
-import os from "os";
-import jwt from "jsonwebtoken";
 import express from "express";
 import cors from "cors";
 import { createRouter } from "./presentation/http/routes";
 import { initSocket } from "./presentation/ws";
-import { loadConfig, loadGlobalConfig } from "#common/helpers/load-config.helper";
+import {
+  loadConfig,
+  loadGlobalConfig,
+  loadProjectAuthStore,
+  writeProjectAuthStore,
+} from "#common/helpers/load-config.helper";
 import { AuthService } from "./services/auth.service";
 import { VaultService } from "./services/vault.service";
 import { EditorService } from "./services/editor.service";
 import { UserTrackerService } from "./services/user-tracker.service";
 import { BuildTrackerService } from "./services/build-tracker.service";
-import { AgentClient } from "./agent-client";
-import { startDaemon } from "../cli/daemon/lifecycle";
 
 interface ServerInstance {
   config: ReturnType<typeof loadConfig>;
@@ -24,7 +25,6 @@ interface ServerInstance {
 let cachedInstance: ServerInstance | null = null;
 let httpServerRef: http.Server | null = null;
 let userTrackerRef: UserTrackerService | null = null;
-let agentClientRef: AgentClient | null = null;
 let processCleanupAttached = false;
 
 export function startServer(): ServerInstance {
@@ -34,12 +34,31 @@ export function startServer(): ServerInstance {
   const globalConfig = loadGlobalConfig();
   const port = config.port;
 
-  const vault = new VaultService(globalConfig.auth.secret);
-  const auth = new AuthService(globalConfig.auth, vault);
+  const projectCwd = process.cwd();
+  let authStore = loadProjectAuthStore(projectCwd);
+  if (!authStore) {
+    authStore = {
+      salt: crypto.randomBytes(16).toString("hex"),
+      secret: crypto.randomBytes(32).toString("hex"),
+      users: {},
+    };
+    writeProjectAuthStore(projectCwd, authStore);
+  }
 
-  Object.entries(globalConfig.auth.users).forEach(([username, { hash }]) => {
+  const { salt, secret, users } = authStore;
+
+  const vault = new VaultService(secret, (updatedUsers) => {
+    const current = loadProjectAuthStore(projectCwd) ?? { salt, secret, users: {} };
+    const serializedUsers: Record<string, { hash: string }> = {};
+    updatedUsers.forEach((v, k) => { serializedUsers[k] = v; });
+    writeProjectAuthStore(projectCwd, { ...current, users: serializedUsers });
+  });
+
+  Object.entries(users).forEach(([username, { hash }]) => {
     vault.set(username, hash);
   });
+
+  const auth = new AuthService({ salt, secret }, vault);
 
   const userTracker = new UserTrackerService(config.packagesDir);
   userTracker.start();
@@ -48,23 +67,9 @@ export function startServer(): ServerInstance {
   app.use(cors({ origin: true, credentials: true }));
 
   const server = http.createServer(app);
-  const { buildsNs } = initSocket(server, auth);
+  const { buildsNs, agentHub } = initSocket(server, auth);
 
-  const serverId = crypto.randomUUID();
-  const agentToken = jwt.sign(
-    { kind: "server", serverId, projectCwd: process.cwd() },
-    globalConfig.auth.secret,
-  );
-
-  const agentClient = new AgentClient({
-    port: globalConfig.agentPort,
-    token: agentToken,
-    spawnIfDown: () => startDaemon({ agentName: os.userInfo().username }),
-  });
-  agentClient.connect();
-  agentClientRef = agentClient;
-
-  const editor = new EditorService(config.packagesDir, agentClient, config.editorPathMap);
+  const editor = new EditorService(config.packagesDir, agentHub, config.editorPathMap);
 
   const buildTracker = new BuildTrackerService(buildsNs, userTracker);
 

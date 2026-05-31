@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from "fs";
 import path from "path";
-import type { AgentClient } from "../agent-client";
+import type { AgentHub } from "../presentation/ws/agent";
 import { CommandActions, type AgentCommand } from "#common/types/agent-ws.types";
 import { TooltifyError } from "#common/errors/tooltify.error";
 import { normalizePath } from "#common/utils/normalizedPath"
@@ -9,7 +9,7 @@ import type { EditorPathMap } from "#common/helpers/load-config.helper"
 export class EditorService {
   constructor(
     private basePath: string,
-    private agentWs: AgentClient,
+    private agentWs: AgentHub,
     private editorPathMap?: EditorPathMap,
   ) { }
 
@@ -73,7 +73,10 @@ export class EditorService {
       payload: { path: target },
     };
 
-    this.agentWs.send(username, command);
+    const delivered = this.agentWs.send(username, command);
+    if (!delivered) {
+      throw new TooltifyError("Agent not connected", "AGENT_NOT_CONNECTED", 503);
+    }
 
     return { opened: target };
   }

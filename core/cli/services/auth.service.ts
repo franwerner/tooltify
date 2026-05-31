@@ -1,6 +1,5 @@
 import fs from "fs"
 import path from "path"
-import crypto from "crypto"
 import { CONFIG_DIRNAME } from "#common/constant/configDirname.constant"
 import { loadGlobalConfig, GLOBAL_CONFIG_PATH, type GlobalConfig } from "#common/helpers/load-config.helper"
 import type { IDEType } from "#common/types/ide.types"
@@ -31,22 +30,16 @@ export function bootstrapGlobalConfig(opts: { ideType: IDEType; remote: boolean 
         agentPort: DEFAULT_AGENT_PORT,
         ideType: opts.ideType,
         remote: opts.remote,
-        auth: {
-            salt: crypto.randomBytes(16).toString("hex"),
-            secret: crypto.randomBytes(32).toString("hex"),
-            users: {},
-        },
     }
     fs.writeFileSync(GLOBAL_CONFIG_PATH, JSON.stringify(initial, null, 2), { mode: 0o600 })
 }
 
-export function computeHash(password: string): string {
-    const { auth } = loadGlobalConfig()
-    return crypto.createHash("sha256").update(auth.salt + password).digest("hex")
+/** @deprecated Will be removed in batch 2 when CLI flow is rewritten. */
+export function computeHash(_password: string): string {
+    throw new Error("computeHash: use server-side registration via POST /auth/register")
 }
 
-export function persistUserHash(username: string, hash: string): void {
-    const config = loadGlobalConfig()
-    config.auth.users[username] = { hash }
-    fs.writeFileSync(GLOBAL_CONFIG_PATH, JSON.stringify(config, null, 2), { mode: 0o600 })
+/** @deprecated Will be removed in batch 2 when CLI flow is rewritten. */
+export function persistUserHash(_username: string, _hash: string): void {
+    throw new Error("persistUserHash: use server-side registration via POST /auth/register")
 }

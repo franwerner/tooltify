@@ -2,7 +2,11 @@ import { Router } from "express";
 import { TooltifyError } from "#common/errors/tooltify.error";
 import type { AuthService } from "../../../services/auth.service";
 
-export const createAuthRoutes = (auth: AuthService, getSessionUser: (req: any) => string | null) => {
+export const createAuthRoutes = (
+  auth: AuthService,
+  getSessionUser: (req: any) => string | null,
+  sessionGuard: (req: any, res: any, next: any) => void,
+) => {
   const router = Router();
 
   router.get("/ping", (_req, res) => {
@@ -24,6 +28,17 @@ export const createAuthRoutes = (auth: AuthService, getSessionUser: (req: any) =
     res.json({ message: "Login successful", data });
   });
 
+  router.post("/register", (req, res, next) => {
+    const isBootstrap = auth.getUsers().length === 0;
+    if (isBootstrap) {
+      return registerUser(req, res);
+    }
+    return sessionGuard(req, res, (err?: any) => {
+      if (err) return next(err);
+      return registerUser(req, res);
+    });
+  });
+
   router.get("/session", (req, res) => {
     const user = getSessionUser(req);
     if (!user) throw new TooltifyError("No active session", "NO_SESSION", 401);
@@ -34,6 +49,13 @@ export const createAuthRoutes = (auth: AuthService, getSessionUser: (req: any) =
     res.setHeader("Set-Cookie", "tooltify_session=; Path=/; HttpOnly; Max-Age=0");
     res.json({ message: "Logged out" });
   });
+
+  function registerUser(req: any, res: any): void {
+    const { user, password } = req.body || {};
+    if (!user || !password) throw new TooltifyError("Missing credentials", "MISSING_CREDENTIALS", 400);
+    auth.register(user, password);
+    res.status(201).json({ message: "User registered" });
+  }
 
   return router;
 };
