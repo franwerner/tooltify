@@ -1,5 +1,11 @@
 # @tooltify/core
 
+## 0.7.1
+
+### Patch Changes
+
+- 23da81a: `tooltify start` can now override the editor on an existing session: it prompts for editor/remote (defaulting to the current values) without asking for the password again, and restarts the agent only when those settings actually change.
+
 ## 0.7.0
 
 ### Minor Changes
