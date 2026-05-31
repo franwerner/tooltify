@@ -36,10 +36,6 @@ class AgentClient {
         this.socket.on("disconnect", (reason) => {
             console.log(`[server:agent-client] disconnected — ${reason}`)
         })
-
-        this.socket.on("response", (data: unknown) => {
-            console.log(`[server:agent-client] response — ${JSON.stringify(data)}`)
-        })
     }
 
     connect(): void {
