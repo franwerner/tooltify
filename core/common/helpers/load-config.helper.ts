@@ -14,6 +14,7 @@ export interface TooltifyConfig {
   port: number;
   host: string;
   packagesDir: string;
+  // Solo runtime: se deriva de TOOLTIFY_HOST_ROOT, no se configura en el JSON.
   editorPathMap?: EditorPathMap;
 }
 
@@ -121,16 +122,12 @@ export function loadConfig(): TooltifyConfig {
 
   config.port ||= DEFAULT_PORT
 
-  // Cuando el server corre en un container, las rutas que resuelve (bajo cwd)
-  // no existen en el host donde el agente abre el editor. Si el host pasa su
-  // raíz por env, derivamos el remapeo cwd→host sin pedir editorPathMap a mano.
-  // Un editorPathMap explícito tiene prioridad.
-  if (!config.editorPathMap) {
-    const hostRoot = process.env[HOST_ROOT_ENV];
-    if (hostRoot) {
-      config.editorPathMap = { from: baseDir, to: hostRoot };
-    }
-  }
+  // El remapeo de rutas es solo por env: cuando el server corre en container,
+  // las rutas que resuelve (bajo cwd) no existen en el host donde el agente
+  // abre el editor. Si el host exporta su raíz, mapeamos cwd→host. Se ignora
+  // cualquier editorPathMap del JSON.
+  const hostRoot = process.env[HOST_ROOT_ENV];
+  config.editorPathMap = hostRoot ? { from: baseDir, to: hostRoot } : undefined;
 
   return config;
 }
