@@ -6,7 +6,6 @@ import { createRouter } from "./presentation/http/routes";
 import { initSocket } from "./presentation/ws";
 import {
   loadConfig,
-  loadGlobalConfig,
   loadProjectAuthStore,
   writeProjectAuthStore,
 } from "#common/helpers/load-config.helper";
@@ -31,7 +30,6 @@ export function startServer(): ServerInstance {
   if (cachedInstance) return cachedInstance;
 
   const config = loadConfig();
-  const globalConfig = loadGlobalConfig();
   const port = config.port;
   // Las cookies se aíslan por dominio, no por puerto: con varios proyectos en
   // localhost una sesión pisaría la otra. El nombre por-puerto las separa.
