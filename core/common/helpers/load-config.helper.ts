@@ -38,6 +38,7 @@ export interface HomeToken {
 
 const DEFAULT_PORT = 4100;
 const DEFAULT_AGENT_PORT = 41030;
+const HOST_ROOT_ENV = "TOOLTIFY_HOST_ROOT";
 const GLOBAL_CONFIG_PATH = path.join(os.homedir(), ".tooltify", "config.json");
 
 export function projectAuthStorePath(projectCwd: string): string {
@@ -119,6 +120,17 @@ export function loadConfig(): TooltifyConfig {
   config.packagesDir = path.resolve(baseDir, config.packagesDir);
 
   config.port ||= DEFAULT_PORT
+
+  // Cuando el server corre en un container, las rutas que resuelve (bajo cwd)
+  // no existen en el host donde el agente abre el editor. Si el host pasa su
+  // raíz por env, derivamos el remapeo cwd→host sin pedir editorPathMap a mano.
+  // Un editorPathMap explícito tiene prioridad.
+  if (!config.editorPathMap) {
+    const hostRoot = process.env[HOST_ROOT_ENV];
+    if (hostRoot) {
+      config.editorPathMap = { from: baseDir, to: hostRoot };
+    }
+  }
 
   return config;
 }
