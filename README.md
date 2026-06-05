@@ -24,52 +24,16 @@ Además trae herramientas de apoyo en el mismo overlay:
 
 ## Instalación
 
-```bash
-# Vite
-npm i -D @tooltify/integration-vite
+Elegí la integración de tu bundler. Cada una documenta su instalación, runtimes soportados, opciones del plugin y los gotchas propios:
 
-# Rspack
-npm i -D @tooltify/integration-rspack
-```
+- **[Vite](integrations/vite/README.md)** — `npm i -D @tooltify/integration-vite` (React y Vue).
+- **[Rspack](integrations/rspack/README.md)** — `npm i -D @tooltify/integration-rspack` (solo React).
 
-Las integraciones traen `@tooltify/core` (server, agente y la CLI `tooltify`) como dependencia.
+Las integraciones traen `@tooltify/core` (server, agente y la CLI `tooltify`) como dependencia. El resto de esta página es común a todos los bundlers.
 
-## Quick start
+## Después de instalar
 
-### Vite
-
-```ts
-// vite.config.ts
-import { defineConfig } from "vite";
-import { viteTooltify, Runtime } from "@tooltify/integration-vite";
-
-export default defineConfig(({ command }) => ({
-  plugins: [
-    viteTooltify({
-      runtime: { type: Runtime.REACT },
-      enabled: command === "serve", // solo en desarrollo
-    }),
-  ],
-}));
-```
-
-### Rspack
-
-```ts
-// rspack.config.ts
-import { rspackTooltify, Runtime } from "@tooltify/integration-rspack";
-
-export default {
-  plugins: [
-    rspackTooltify({
-      runtime: { type: Runtime.REACT },
-      enabled: process.env.NODE_ENV !== "production",
-    }),
-  ],
-};
-```
-
-Creá un `tooltify.config.json` en la raíz del proyecto:
+Una vez registrado el plugin (ver el README de tu bundler), creá un `tooltify.config.json` en la raíz del proyecto:
 
 ```json
 {
@@ -83,12 +47,6 @@ Después registrás tu sesión y arrancás el agente:
 ```bash
 npx tooltify   # → Start agent
 ```
-
-| Opción del plugin | Descripción |
-|---|---|
-| `enabled` | Activa Tooltify (normalmente `true` solo en dev). |
-| `runtime` | `{ type: Runtime.REACT \| Runtime.VUE, shouldInjectSource? }`. `shouldInjectSource` filtra qué nodos reciben metadata de origen. |
-| `publicUrl` | Opcional. URL pública del server si no es `http://localhost:<port>`. |
 
 ## Configuración
 
@@ -110,6 +68,18 @@ npx tooltify   # → Start agent
 | `packagesDir` | Carpeta de código a rastrear, relativa a la raíz del proyecto. |
 | `port` | Puerto del server de ese proyecto. Único por proyecto si corrés varios a la vez. |
 | `editorPathMap` | Opcional. Remapea las rutas que ve el server (`from`) a las que entiende el editor del host (`to`). Útil cuando el server corre en un contenedor: ej. el server resuelve `/app/src/App.tsx` pero el editor tiene que abrir `/home/user/projects/myapp/src/App.tsx`. |
+
+#### Remapeo automático en container — `TOOLTIFY_HOST_ROOT`
+
+Si el server corre en un container, en vez de hardcodear `editorPathMap` (ruta del host distinta por máquina/dev) podés exportar `TOOLTIFY_HOST_ROOT` con la raíz del proyecto en el host. Tooltify deriva el remapeo solo: `from` = cwd del server (la raíz dentro del container), `to` = `TOOLTIFY_HOST_ROOT`.
+
+```yaml
+# docker-compose.yml — pasás el host path con interpolación de compose
+environment:
+  TOOLTIFY_HOST_ROOT: ${PWD}/app/web
+```
+
+Cada dev resuelve su propia ruta vía `${PWD}`, así que el `tooltify.config.json` queda sin rutas fijas y commiteable. Sin el env (ej. corriendo en el host), no hay remapeo y las rutas se usan tal cual. Un `editorPathMap` explícito en el config tiene prioridad sobre el env.
 
 ### Auth del proyecto — `<proyecto>/.tooltify/` (gitignored)
 
@@ -139,4 +109,4 @@ La identidad se resuelve con login por password contra el server del proyecto, q
 - **Solo desarrollo.** Se activa con `enabled` y no va a producción.
 - **Multiplataforma.** Linux, macOS y Windows (editor local o remoto WSL/SSH).
 - **Multi-usuario en la misma máquina.** El modo grupal asume que los usuarios comparten el host (ej. un box de dev por SSH); no es colaboración entre máquinas distintas.
-- **Runtimes.** React y Vue, sobre Vite o Rspack.
+- **Runtimes.** Vite: React y Vue. Rspack: solo React.
