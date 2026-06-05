@@ -55,11 +55,7 @@ npx tooltify   # → Start agent
 ```json
 {
   "packagesDir": "./src",
-  "port": 4100,
-  "editorPathMap": {
-    "from": "/app",
-    "to": "/home/user/projects/myapp"
-  }
+  "port": 4100
 }
 ```
 
@@ -67,11 +63,12 @@ npx tooltify   # → Start agent
 |---|---|
 | `packagesDir` | Carpeta de código a rastrear, relativa a la raíz del proyecto. |
 | `port` | Puerto del server de ese proyecto. Único por proyecto si corrés varios a la vez. |
-| `editorPathMap` | Opcional. Remapea las rutas que ve el server (`from`) a las que entiende el editor del host (`to`). Útil cuando el server corre en un contenedor: ej. el server resuelve `/app/src/App.tsx` pero el editor tiene que abrir `/home/user/projects/myapp/src/App.tsx`. |
 
-#### Remapeo automático en container — `TOOLTIFY_HOST_ROOT`
+Si el server corre en el host, con eso alcanza: las rutas que resuelve ya son las que abre el editor.
 
-Si el server corre en un container, en vez de hardcodear `editorPathMap` (ruta del host distinta por máquina/dev) podés exportar `TOOLTIFY_HOST_ROOT` con la raíz del proyecto en el host. Tooltify deriva el remapeo solo: `from` = cwd del server (la raíz dentro del container), `to` = `TOOLTIFY_HOST_ROOT`.
+#### Server en container — `TOOLTIFY_HOST_ROOT`
+
+Cuando el server corre en un container, las rutas que resuelve (bajo su cwd, ej. `/app/src/App.tsx`) no existen en el host, donde el agente abre el editor (ahí sería `/home/user/projects/myapp/src/App.tsx`). El remapeo se hace **solo por env**: exportás la raíz del proyecto en el host en `TOOLTIFY_HOST_ROOT` y Tooltify deriva el mapeo `from` = cwd del server (la raíz dentro del container) → `to` = `TOOLTIFY_HOST_ROOT`.
 
 ```yaml
 # docker-compose.yml — pasás el host path con interpolación de compose
@@ -79,7 +76,7 @@ environment:
   TOOLTIFY_HOST_ROOT: ${PWD}/app/web
 ```
 
-Cada dev resuelve su propia ruta vía `${PWD}`, así que el `tooltify.config.json` queda sin rutas fijas y commiteable. Sin el env (ej. corriendo en el host), no hay remapeo y las rutas se usan tal cual. Un `editorPathMap` explícito en el config tiene prioridad sobre el env.
+Cada dev resuelve su propia ruta vía `${PWD}`, así que el `tooltify.config.json` queda sin rutas fijas y commiteable. Sin el env (server en el host) no hay remapeo: las rutas se usan tal cual.
 
 ### Auth del proyecto — `<proyecto>/.tooltify/` (gitignored)
 
